@@ -12,8 +12,7 @@ namespace BubbleBurst.View
     /// </summary>
     public partial class BubbleBurstView : UserControl
     {
-        // From XAML:
-              // BubbleMatrixView _bubbleMatrixView;
+        // From XAML: BubbleMatrixView _bubbleMatrixView;
         readonly BubbleBurstViewModel _bubbleBurst;
 
         public BubbleBurstView()
@@ -58,9 +57,9 @@ namespace BubbleBurst.View
                 Keyboard.Modifiers == ModifierKeys.Control &&
                 e.Key == Key.Z;
 
-            if (undo && _bubbleBurst.CanUndo)
+            if (undo && _bubbleBurst.UndoCommand.CanExecute(null))
             {
-                _bubbleBurst.BubbleMatrix.Undo();
+                _bubbleBurst.UndoCommand.Execute(null);
                 e.Handled = true;
             }
         }

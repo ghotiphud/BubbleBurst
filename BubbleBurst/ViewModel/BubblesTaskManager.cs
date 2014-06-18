@@ -17,10 +17,7 @@ namespace BubbleBurst.ViewModel
         /// <summary>
         /// Returns true if an undo operation can be performed at this time.
         /// </summary>
-        internal bool CanUndo
-        {
-            get { return _undoStack.Any(); }
-        }
+        internal bool CanUndo { get { return _undoStack.Any(); } }
 
         /// <summary>
         /// Raised when tasks are available to be performed.

@@ -15,21 +15,8 @@ namespace BubbleBurst.View
         BubbleMatrixViewModel _bubbleMatrix;
         BubblesTaskStoryboardFactory _storyboardFactory;
 
-        /// <summary>
-        /// Returns the number of columns in the bubble matrix.
-        /// </summary>
-        internal int ColumnCount
-        {
-            get { return _bubbleCanvas != null ? _bubbleCanvas.ColumnCount : -1; }
-        }
-
-        /// <summary>
-        /// Returns the number of rows in the bubble matrix.
-        /// </summary>
-        internal int RowCount
-        {
-            get { return _bubbleCanvas != null ? _bubbleCanvas.RowCount : -1; }
-        }
+        internal int RowCount { get { return _bubbleCanvas != null ? _bubbleCanvas.RowCount : -1; } }
+        internal int ColumnCount { get { return _bubbleCanvas != null ? _bubbleCanvas.ColumnCount : -1; } }
 
         /// <summary>
         /// Raised when the RowCount and ColumnCount properties have meaningful values.

@@ -10,9 +10,7 @@ namespace BubbleBurst.ViewModel
     public class BubbleBurstViewModel : ObservableObject
     {
         public BubbleMatrixViewModel BubbleMatrix { get; private set; }
-
-        public bool CanUndo { get { return this.GameOver == null && this.BubbleMatrix.CanUndo; } }
-
+        
         GameOverViewModel _gameOver;
         public GameOverViewModel GameOver
         {
@@ -27,6 +25,8 @@ namespace BubbleBurst.ViewModel
                 base.RaisePropertyChanged("GameOver");
             }
         }
+
+        private bool CanUndo { get { return this.GameOver == null && this.BubbleMatrix.CanUndo; } }
 
         /// <summary>
         /// Returns the command that starts a new game of BubbleBurst.

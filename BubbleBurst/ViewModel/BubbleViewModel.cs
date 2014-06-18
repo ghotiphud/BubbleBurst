@@ -80,10 +80,7 @@ namespace BubbleBurst.ViewModel
         /// <summary>
         /// Returns the command used to burst the bubble group in which this bubble exists.
         /// </summary>
-        public ICommand BurstBubbleGroupCommand
-        {
-            get { return new RelayCommand(_bubbleMatrix.BurstBubbleGroup); }
-        }
+        public ICommand BurstBubbleGroupCommand { get { return new RelayCommand(_bubbleMatrix.BurstBubbleGroup); } }
 
         internal BubbleViewModel(BubbleMatrixViewModel bubbleMatrix, int row, int column)
         {

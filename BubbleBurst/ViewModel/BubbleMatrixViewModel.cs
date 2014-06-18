@@ -16,13 +16,17 @@ namespace BubbleBurst.ViewModel
         readonly BubbleFactory _bubbleFactory;
         readonly BubbleGroup _bubbleGroup;
         readonly Stack<int> _bubbleGroupSizeStack;
+
+        // The Matrix
+        internal int RowCount { get; private set; }
+        internal int ColumnCount { get; private set; }
+        
+        // Bubbles
         readonly ObservableCollection<BubbleViewModel> _bubblesInternal;
-
-        int _columnCount, _rowCount;
-        bool _isIdle;
-
         public ReadOnlyObservableCollection<BubbleViewModel> Bubbles { get; private set; }
-
+        
+        // Tasks
+        bool _isIdle;
         /// <summary>
         /// Represents whether the application is currently processing something that
         /// requires the user interface to ignore user interactions until it finishes.
@@ -41,39 +45,10 @@ namespace BubbleBurst.ViewModel
             }
         }
 
-        /// <summary>
-        /// Returns the object that creates and publishes tasks for a bubble matrix.
-        /// </summary>
         public BubblesTaskManager TaskManager { get; private set; }
 
-        internal bool CanUndo
-        {
-            get { return this.IsIdle && this.TaskManager.CanUndo; }
-        }
-
-        internal int ColumnCount
-        {
-            get { return _columnCount; }
-        }
-
-        internal int MostBubblesPoppedAtOnce
-        {
-            get { return _bubbleGroupSizeStack.Max(); }
-        }
-
-        internal int RowCount
-        {
-            get { return _rowCount; }
-        }
-
-        public void ClearBubbles()
-        {
-            if (!this.IsIdle)
-                throw new InvalidOperationException("Cannot clear bubbles when matrix is not idle.");
-
-            _bubblesInternal.Clear();
-        }
-
+        internal bool CanUndo { get { return this.IsIdle && this.TaskManager.CanUndo; } }
+        
         /// <summary>
         /// Raised when there are no more bubble groups left to burst.
         /// </summary>
@@ -110,8 +85,8 @@ namespace BubbleBurst.ViewModel
             if (columnCount < 1)
                 throw new ArgumentOutOfRangeException("columnCount", columnCount, "Must be greater than zero.");
 
-            _rowCount = rowCount;
-            _columnCount = columnCount;
+            RowCount = rowCount;
+            ColumnCount = columnCount;
         }
 
         public void StartNewGame()
