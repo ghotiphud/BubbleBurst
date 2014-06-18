@@ -13,7 +13,7 @@ namespace BubbleBurst.ViewModel.Internal
     /// </summary>
     internal class BubblesTaskFactory
     {
-        
+
         internal BubblesTaskFactory(BubbleMatrixViewModel bubbleMatrix)
         {
             if (bubbleMatrix == null)
@@ -22,9 +22,9 @@ namespace BubbleBurst.ViewModel.Internal
             _bubbleMatrix = bubbleMatrix;
         }
 
-        
-        
-        
+
+
+
         /// <summary>
         /// Creates a sequence of tasks that must be performed for the 
         /// specified collection of bubbles.
@@ -61,8 +61,8 @@ namespace BubbleBurst.ViewModel.Internal
                 .ToArray();
         }
 
-        
-        
+
+
         BubblesTask CreateUndoTask(BubblesTask originalTask)
         {
             var bubbles = originalTask.Bubbles.ToList();
@@ -154,7 +154,7 @@ namespace BubbleBurst.ViewModel.Internal
                     complete = delegate
                     {
                         _bubbleMatrix.IsIdle = true;
-                        _bubbleMatrix.TryToEndGame();                        
+                        _bubbleMatrix.TryToEndGame();
                     };
                     break;
 
@@ -218,8 +218,8 @@ namespace BubbleBurst.ViewModel.Internal
 
                     var emptyIndexes =
                         (from rowIndex in Enumerable.Range(0, _bubbleMatrix.RowCount)
-                        where !bubbleRowIndexes.Contains(rowIndex)
-                        select rowIndex)
+                         where !bubbleRowIndexes.Contains(rowIndex)
+                         select rowIndex)
                         .ToArray();
 
                     int emptyIndexCount = emptyIndexes.Count();
@@ -246,10 +246,10 @@ namespace BubbleBurst.ViewModel.Internal
             return movedBubbles;
         }
 
-        
-        
-        
+
+
+
         readonly BubbleMatrixViewModel _bubbleMatrix;
 
-            }
+    }
 }

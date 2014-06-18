@@ -11,7 +11,7 @@ namespace BubbleBurst.ViewModel.Internal
     /// </summary>
     internal class BubbleGroup
     {
-        
+
         internal BubbleGroup(IEnumerable<BubbleViewModel> allBubbles)
         {
             if (allBubbles == null)
@@ -21,8 +21,8 @@ namespace BubbleBurst.ViewModel.Internal
             this.BubblesInGroup = new List<BubbleViewModel>();
         }
 
-        
-        
+
+
         /// <summary>
         /// Returns the list of bubbles in the bubble group.
         /// </summary>
@@ -36,9 +36,9 @@ namespace BubbleBurst.ViewModel.Internal
             get { return this.BubblesInGroup.Any(); }
         }
 
-        
-        
-        
+
+
+
         /// <summary>
         /// Informs each bubble in the group that it is in the active bubble group.
         /// </summary>
@@ -102,8 +102,8 @@ namespace BubbleBurst.ViewModel.Internal
             this.BubblesInGroup.Clear();
         }
 
-        
-        
+
+
         void SearchForGroup(BubbleViewModel bubble)
         {
             if (bubble == null)
@@ -154,10 +154,10 @@ namespace BubbleBurst.ViewModel.Internal
                 b.BubbleType == bubbleType);
         }
 
-        
-        
-        
+
+
+
         readonly IEnumerable<BubbleViewModel> _allBubbles;
 
-            }
+    }
 }

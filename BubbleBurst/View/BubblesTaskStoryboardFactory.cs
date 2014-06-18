@@ -15,7 +15,8 @@ namespace BubbleBurst.View
     /// </summary>
     internal class BubblesTaskStoryboardFactory
     {
-        
+        readonly BubbleCanvas _bubbleCanvas;
+
         internal BubblesTaskStoryboardFactory(BubbleCanvas bubbleCanvas)
         {
             if (bubbleCanvas == null)
@@ -24,9 +25,6 @@ namespace BubbleBurst.View
             _bubbleCanvas = bubbleCanvas;
         }
 
-        
-        
-        
         internal Storyboard CreateStoryboard(BubblesTask task)
         {
             int millisecondsPerUnit;
@@ -49,8 +47,6 @@ namespace BubbleBurst.View
                 bubbles.ToArray());
         }
 
-        
-        
         void GetStoryboardCreationData(
           BubblesTask task,
           out int millisecondsPerUnit,
@@ -163,8 +159,8 @@ namespace BubbleBurst.View
         }
 
         static Duration CalculateDuration(
-            BubblesTaskType taskType, 
-            BubbleViewModel bubble, 
+            BubblesTaskType taskType,
+            BubbleViewModel bubble,
             int millisecondsPerUnit)
         {
             int totalMilliseconds;
@@ -192,11 +188,5 @@ namespace BubbleBurst.View
         {
             return taskType != BubblesTaskType.Burst;
         }
-
-        
-        
-        
-        readonly BubbleCanvas _bubbleCanvas;
-
-            }
+    }
 }

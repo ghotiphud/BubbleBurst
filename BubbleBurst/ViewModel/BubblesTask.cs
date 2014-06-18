@@ -10,7 +10,7 @@ namespace BubbleBurst.ViewModel
     /// </summary>
     public class BubblesTask
     {
-        
+
         internal BubblesTask(BubblesTaskType taskType, bool isUndo, Func<IEnumerable<BubbleViewModel>> getBubbles, Action complete)
         {
             this.TaskType = taskType;
@@ -19,8 +19,8 @@ namespace BubbleBurst.ViewModel
             this.Complete = complete;
         }
 
-        
-        
+
+
         /// <summary>
         /// Returns the bubbles associated with this task.
         /// </summary>
@@ -54,10 +54,10 @@ namespace BubbleBurst.ViewModel
         /// </summary>
         public BubblesTaskType TaskType { get; private set; }
 
-        
-        
+
+
         BubbleViewModel[] _bubbles;
         readonly Func<IEnumerable<BubbleViewModel>> _getBubbles;
 
-            }
+    }
 }

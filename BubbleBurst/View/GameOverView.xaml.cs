@@ -11,6 +11,8 @@ namespace BubbleBurst.View
     /// </summary>
     public partial class GameOverView : UserControl
     {
+        GameOverViewModel _gameOver;
+        readonly Storyboard _outroStoryboard;
 
         public GameOverView()
         {
@@ -20,8 +22,6 @@ namespace BubbleBurst.View
 
             base.DataContextChanged += this.HandleDataContextChanged;
         }
-
-
 
         void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
@@ -38,11 +38,5 @@ namespace BubbleBurst.View
         {
             _gameOver.Close();
         }
-
-
-
-        GameOverViewModel _gameOver;
-        readonly Storyboard _outroStoryboard;
-
     }
 }

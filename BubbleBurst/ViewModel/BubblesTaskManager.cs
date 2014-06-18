@@ -10,7 +10,7 @@ namespace BubbleBurst.ViewModel
     /// </summary>
     public class BubblesTaskManager
     {
-        
+
         internal BubblesTaskManager(BubbleMatrixViewModel bubbleMatrix)
         {
             _bubblesTaskFactory = new BubblesTaskFactory(bubbleMatrix);
@@ -18,15 +18,15 @@ namespace BubbleBurst.ViewModel
             _undoStack = new Stack<IEnumerable<BubblesTask>>();
         }
 
-        
-        
+
+
         /// <summary>
         /// Raised when tasks are available to be performed.
         /// </summary>
         public event EventHandler PendingTasksAvailable;
 
-        
-        
+
+
         /// <summary>
         /// Returns true if an undo operation can be performed at this time.
         /// </summary>
@@ -35,9 +35,9 @@ namespace BubbleBurst.ViewModel
             get { return _undoStack.Any(); }
         }
 
-        
-        
-        
+
+
+
         /// <summary>
         /// Returns the next pending task if one exists, or null.
         /// </summary>
@@ -46,8 +46,8 @@ namespace BubbleBurst.ViewModel
             return _pendingTasks.Any() ? _pendingTasks.Dequeue() : null;
         }
 
-        
-        
+
+
         /// <summary>
         /// Publishs a set of tasks that will burst a bubble group.
         /// </summary>
@@ -78,8 +78,8 @@ namespace BubbleBurst.ViewModel
             _undoStack.Clear();
         }
 
-        
-        
+
+
         void ArchiveTasks(IEnumerable<BubblesTask> tasks)
         {
             _undoStack.Push(tasks);
@@ -104,12 +104,12 @@ namespace BubbleBurst.ViewModel
             }
         }
 
-        
-        
-        
+
+
+
         readonly BubblesTaskFactory _bubblesTaskFactory;
         readonly Queue<BubblesTask> _pendingTasks;
         readonly Stack<IEnumerable<BubblesTask>> _undoStack;
 
-            }
+    }
 }

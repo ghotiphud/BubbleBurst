@@ -10,13 +10,10 @@ namespace BubbleBurst.View
     /// </summary>
     public class BubbleCanvas : Canvas
     {
-        
         public BubbleCanvas()
         {
         }
 
-        
-        
         internal static int BubbleSize
         {
             get { return 42; }
@@ -32,9 +29,6 @@ namespace BubbleBurst.View
             get { return (int)Math.Floor(base.ActualHeight / BubbleSize); }
         }
 
-        
-        
-        
         internal double CalculateLeft(FrameworkElement bubbleContainer)
         {
             if (bubbleContainer == null)
@@ -59,8 +53,6 @@ namespace BubbleBurst.View
             return this.CalculateTop(bubble.Row);
         }
 
-        
-        
         protected override void OnVisualChildrenChanged(DependencyObject visualAdded, DependencyObject visualRemoved)
         {
             var contentPresenter = visualAdded as ContentPresenter;
@@ -80,8 +72,6 @@ namespace BubbleBurst.View
             base.OnVisualChildrenChanged(visualAdded, visualRemoved);
         }
 
-        
-        
         double CalculateLeft(int column)
         {
             double bubblesWidth = BubbleSize * this.ColumnCount;
@@ -95,7 +85,5 @@ namespace BubbleBurst.View
             double vertOffset = (base.ActualHeight - bubblesHeight) / 2;
             return row * BubbleSize + vertOffset;
         }
-
-        
-            }
+    }
 }

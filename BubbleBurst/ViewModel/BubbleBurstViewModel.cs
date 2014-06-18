@@ -9,19 +9,8 @@ namespace BubbleBurst.ViewModel
     /// </summary>
     public class BubbleBurstViewModel : ObservableObject
     {
-        
-        public BubbleBurstViewModel()
-        {
-            this.BubbleMatrix = new BubbleMatrixViewModel();
-            this.BubbleMatrix.GameEnded += delegate
-            {
-                this.GameOver = new GameOverViewModel(this.BubbleMatrix);
-                this.GameOver.RequestClose += this.HandleGameOverRequestClose;
-            };
-        }
+        GameOverViewModel _gameOver;
 
-        
-        
         /// <summary>
         /// Returns the ViewModel responsible for managing the matrix of bubbles.
         /// </summary>
@@ -68,17 +57,20 @@ namespace BubbleBurst.ViewModel
             get { return new RelayCommand(this.BubbleMatrix.Undo, () => this.CanUndo); }
         }
 
-        
-        
+        public BubbleBurstViewModel()
+        {
+            this.BubbleMatrix = new BubbleMatrixViewModel();
+            this.BubbleMatrix.GameEnded += delegate
+            {
+                this.GameOver = new GameOverViewModel(this.BubbleMatrix);
+                this.GameOver.RequestClose += this.HandleGameOverRequestClose;
+            };
+        }
+
         void HandleGameOverRequestClose(object sender, EventArgs e)
         {
             this.GameOver.RequestClose -= this.HandleGameOverRequestClose;
             this.GameOver = null;
         }
-
-        
-        
-        GameOverViewModel _gameOver;
-
-            }
+    }
 }

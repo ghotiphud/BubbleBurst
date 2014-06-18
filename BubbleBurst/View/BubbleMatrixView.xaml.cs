@@ -11,16 +11,10 @@ namespace BubbleBurst.View
     /// </summary>
     public partial class BubbleMatrixView : ItemsControl
     {
-        
-        public BubbleMatrixView()
-        {
-            InitializeComponent();
+        BubbleCanvas _bubbleCanvas;
+        BubbleMatrixViewModel _bubbleMatrix;
+        BubblesTaskStoryboardFactory _storyboardFactory;
 
-            base.DataContextChanged += this.HandleDataContextChanged;
-        }
-
-        
-        
         /// <summary>
         /// Returns the number of columns in the bubble matrix.
         /// </summary>
@@ -37,15 +31,18 @@ namespace BubbleBurst.View
             get { return _bubbleCanvas != null ? _bubbleCanvas.RowCount : -1; }
         }
 
-        
-        
         /// <summary>
         /// Raised when the RowCount and ColumnCount properties have meaningful values.
         /// </summary>
         internal event EventHandler MatrixDimensionsAvailable;
 
-        
-        
+        public BubbleMatrixView()
+        {
+            InitializeComponent();
+
+            base.DataContextChanged += this.HandleDataContextChanged;
+        }
+
         void HandleBubbleCanvasLoaded(object sender, RoutedEventArgs e)
         {
             // Store a reference to the panel that contains the bubbles.
@@ -67,7 +64,6 @@ namespace BubbleBurst.View
             }
         }
 
-        
         void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             // Store a reference to the ViewModel.
@@ -77,9 +73,9 @@ namespace BubbleBurst.View
             {
                 // Hook the event raised after a bubble group bursts and a series
                 // of animations need to run to advance the game state.
-                _bubbleMatrix.TaskManager.PendingTasksAvailable += delegate 
-                { 
-                    this.ProcessNextTask(); 
+                _bubbleMatrix.TaskManager.PendingTasksAvailable += delegate
+                {
+                    this.ProcessNextTask();
                 };
             }
         }
@@ -121,13 +117,5 @@ namespace BubbleBurst.View
             task.Complete();
             this.ProcessNextTask();
         }
-
-        
-        
-        
-        BubbleCanvas _bubbleCanvas;
-        BubbleMatrixViewModel _bubbleMatrix;
-        BubblesTaskStoryboardFactory _storyboardFactory;
-
-            }
+    }
 }

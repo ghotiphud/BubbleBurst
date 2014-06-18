@@ -12,6 +12,10 @@ namespace BubbleBurst.View
     /// </summary>
     public partial class BubbleBurstView : UserControl
     {
+        // From XAML:
+              // BubbleMatrixView _bubbleMatrixView;
+        readonly BubbleBurstViewModel _bubbleBurst;
+
         public BubbleBurstView()
         {
             LoadBubbleViewResources();
@@ -34,8 +38,6 @@ namespace BubbleBurst.View
             };
             Application.Current.Resources.MergedDictionaries.Add(bubbleViewResources);
         }
-
-
 
         void HandleMatrixDimensionsAvailable(object sender, EventArgs e)
         {
@@ -70,10 +72,5 @@ namespace BubbleBurst.View
             _bubbleBurst.BubbleMatrix.SetDimensions(rows, cols);
             _bubbleBurst.BubbleMatrix.StartNewGame();
         }
-
-
-
-        readonly BubbleBurstViewModel _bubbleBurst;
-
     }
 }

@@ -8,14 +8,14 @@ namespace BubbleBurst.ViewModel.Internal
     /// </summary>
     internal class BubbleLocationManager
     {
-        
+
         internal BubbleLocationManager()
         {
-            _previousLocations = new Stack<BubbleLocation>();      
+            _previousLocations = new Stack<BubbleLocation>();
         }
 
-        
-        
+
+
         internal int Column
         {
             get { return _currentLocation.HasValue ? _currentLocation.Value.Column : -1; }
@@ -36,8 +36,8 @@ namespace BubbleBurst.ViewModel.Internal
             get { return _currentLocation.HasValue ? _currentLocation.Value.Row : -1; }
         }
 
-        
-        
+
+
         internal void MoveTo(int row, int column)
         {
             if (_currentLocation.HasValue)
@@ -56,8 +56,8 @@ namespace BubbleBurst.ViewModel.Internal
             }
         }
 
-        
-        
+
+
         private struct BubbleLocation
         {
             public BubbleLocation(int row, int column)
@@ -70,10 +70,10 @@ namespace BubbleBurst.ViewModel.Internal
             public readonly int Row;
         }
 
-        
-        
+
+
         BubbleLocation? _currentLocation;
         readonly Stack<BubbleLocation> _previousLocations;
 
-            }
+    }
 }
