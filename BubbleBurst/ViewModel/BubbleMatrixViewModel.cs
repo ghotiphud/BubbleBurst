@@ -20,11 +20,13 @@ namespace BubbleBurst.ViewModel
         // The Matrix
         internal int RowCount { get; private set; }
         internal int ColumnCount { get; private set; }
-        
+
         // Bubbles
         readonly ObservableCollection<BubbleViewModel> _bubblesInternal;
         public ReadOnlyObservableCollection<BubbleViewModel> Bubbles { get; private set; }
-        
+
+        internal int MostBubblesPoppedAtOnce { get { return _bubbleGroupSizeStack.Max(); } }
+
         // Tasks
         bool _isIdle;
         /// <summary>
@@ -48,7 +50,7 @@ namespace BubbleBurst.ViewModel
         public BubblesTaskManager TaskManager { get; private set; }
 
         internal bool CanUndo { get { return this.IsIdle && this.TaskManager.CanUndo; } }
-        
+
         /// <summary>
         /// Raised when there are no more bubble groups left to burst.
         /// </summary>
@@ -127,6 +129,14 @@ namespace BubbleBurst.ViewModel
                 throw new ArgumentNullException("bubble");
 
             _bubblesInternal.Add(bubble);
+        }
+
+        public void ClearBubbles()
+        {
+            if (!this.IsIdle)
+                throw new InvalidOperationException("Cannot clear bubbles when matrix is not idle.");
+
+            _bubblesInternal.Clear();
         }
 
         internal void BurstBubbleGroup()
