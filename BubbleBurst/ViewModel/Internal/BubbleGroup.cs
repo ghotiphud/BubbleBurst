@@ -11,6 +11,11 @@ namespace BubbleBurst.ViewModel.Internal
     /// </summary>
     internal class BubbleGroup
     {
+        readonly IEnumerable<BubbleViewModel> _allBubbles;
+
+        internal IList<BubbleViewModel> BubblesInGroup { get; private set; }
+
+        internal bool HasBubbles { get { return this.BubblesInGroup.Any(); } }
 
         internal BubbleGroup(IEnumerable<BubbleViewModel> allBubbles)
         {
@@ -21,27 +26,6 @@ namespace BubbleBurst.ViewModel.Internal
             this.BubblesInGroup = new List<BubbleViewModel>();
         }
 
-
-
-        /// <summary>
-        /// Returns the list of bubbles in the bubble group.
-        /// </summary>
-        internal IList<BubbleViewModel> BubblesInGroup { get; private set; }
-
-        /// <summary>
-        /// Returns true if there are any bubbles in the group.
-        /// </summary>
-        internal bool HasBubbles
-        {
-            get { return this.BubblesInGroup.Any(); }
-        }
-
-
-
-
-        /// <summary>
-        /// Informs each bubble in the group that it is in the active bubble group.
-        /// </summary>
         internal void Activate()
         {
             foreach (BubbleViewModel member in this.BubblesInGroup)
@@ -50,9 +34,6 @@ namespace BubbleBurst.ViewModel.Internal
             }
         }
 
-        /// <summary>
-        /// Informs each bubble in the group that it is not in the active bubble group.
-        /// </summary>
         internal void Deactivate()
         {
             foreach (BubbleViewModel member in this.BubblesInGroup)
@@ -66,12 +47,6 @@ namespace BubbleBurst.ViewModel.Internal
         /// is a member.  If a group is found, this object's BubblesInGroup
         /// collection will contain the bubbles in that group afterwards.
         /// </summary>
-        /// <param name="bubble">
-        /// The bubble with which to begin searching for a group.
-        /// </param>
-        /// <returns>
-        /// Returns this object, enabling a fluid-style API usage.
-        /// </returns>
         internal BubbleGroup FindBubbleGroup(BubbleViewModel bubble)
         {
             if (bubble == null)
@@ -101,8 +76,6 @@ namespace BubbleBurst.ViewModel.Internal
             this.Deactivate();
             this.BubblesInGroup.Clear();
         }
-
-
 
         void SearchForGroup(BubbleViewModel bubble)
         {
@@ -153,11 +126,5 @@ namespace BubbleBurst.ViewModel.Internal
                 b.Column == column &&
                 b.BubbleType == bubbleType);
         }
-
-
-
-
-        readonly IEnumerable<BubbleViewModel> _allBubbles;
-
     }
 }

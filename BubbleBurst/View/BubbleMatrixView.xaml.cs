@@ -114,7 +114,7 @@ namespace BubbleBurst.View
 
         void CompleteTask(BubblesTask task)
         {
-            task.Complete();
+            task.OnComplete();
             this.ProcessNextTask();
         }
     }

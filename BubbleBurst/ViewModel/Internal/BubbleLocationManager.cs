@@ -8,35 +8,19 @@ namespace BubbleBurst.ViewModel.Internal
     /// </summary>
     internal class BubbleLocationManager
     {
+        BubbleLocation? _currentLocation;
+        readonly Stack<BubbleLocation> _previousLocations;
+
+        internal int Row { get { return _currentLocation.HasValue ? _currentLocation.Value.Row : -1; } }
+        internal int Column { get { return _currentLocation.HasValue ? _currentLocation.Value.Column : -1; } }
+
+        internal int PreviousRow { get { return _previousLocations.Any() ? _previousLocations.Peek().Row : -1; } }
+        internal int PreviousColumn { get { return _previousLocations.Any() ? _previousLocations.Peek().Column : -1; } }
 
         internal BubbleLocationManager()
         {
             _previousLocations = new Stack<BubbleLocation>();
         }
-
-
-
-        internal int Column
-        {
-            get { return _currentLocation.HasValue ? _currentLocation.Value.Column : -1; }
-        }
-
-        internal int PreviousColumn
-        {
-            get { return _previousLocations.Any() ? _previousLocations.Peek().Column : -1; }
-        }
-
-        internal int PreviousRow
-        {
-            get { return _previousLocations.Any() ? _previousLocations.Peek().Row : -1; }
-        }
-
-        internal int Row
-        {
-            get { return _currentLocation.HasValue ? _currentLocation.Value.Row : -1; }
-        }
-
-
 
         internal void MoveTo(int row, int column)
         {
@@ -56,8 +40,6 @@ namespace BubbleBurst.ViewModel.Internal
             }
         }
 
-
-
         private struct BubbleLocation
         {
             public BubbleLocation(int row, int column)
@@ -69,11 +51,5 @@ namespace BubbleBurst.ViewModel.Internal
             public readonly int Column;
             public readonly int Row;
         }
-
-
-
-        BubbleLocation? _currentLocation;
-        readonly Stack<BubbleLocation> _previousLocations;
-
     }
 }

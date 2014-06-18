@@ -11,6 +11,20 @@ namespace BubbleBurst.ViewModel
     /// </summary>
     public class GameOverViewModel
     {
+        readonly BubbleMatrixViewModel _bubbleMatrix;
+
+        public string Title { get; private set; }
+        public string Subtitle { get; private set; }
+
+        /// <summary>
+        /// Returns the command that exits the application.
+        /// </summary>
+        public ICommand QuitCommand { get; private set; }
+
+        /// <summary>
+        /// Raised when the game-over dialog should be closed.
+        /// </summary>
+        public event EventHandler RequestClose;
 
         internal GameOverViewModel(BubbleMatrixViewModel bubbleMatrix)
         {
@@ -34,33 +48,6 @@ namespace BubbleBurst.ViewModel
             this.QuitCommand = new RelayCommand(Application.Current.Shutdown);
         }
 
-
-
-        /// <summary>
-        /// Raised when the game-over dialog should be closed.
-        /// </summary>
-        public event EventHandler RequestClose;
-
-
-
-        /// <summary>
-        /// Returns the command that exits the application.
-        /// </summary>
-        public ICommand QuitCommand { get; private set; }
-
-        /// <summary>
-        /// Returns the subtitle of the game-over dialog.
-        /// </summary>
-        public string Subtitle { get; private set; }
-
-        /// <summary>
-        /// Returns the title of the game-over dialog.
-        /// </summary>
-        public string Title { get; private set; }
-
-
-
-
         /// <summary>
         /// Closes the game-over dialog.
         /// </summary>
@@ -77,8 +64,6 @@ namespace BubbleBurst.ViewModel
             _bubbleMatrix.StartNewGame();
         }
 
-
-
         void RaiseRequestClose()
         {
             var handler = this.RequestClose;
@@ -87,11 +72,5 @@ namespace BubbleBurst.ViewModel
                 handler(this, EventArgs.Empty);
             }
         }
-
-
-
-
-        readonly BubbleMatrixViewModel _bubbleMatrix;
-
     }
 }

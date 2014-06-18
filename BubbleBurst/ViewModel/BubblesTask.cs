@@ -10,20 +10,11 @@ namespace BubbleBurst.ViewModel
     /// </summary>
     public class BubblesTask
     {
+        readonly Func<IEnumerable<BubbleViewModel>> _getBubbles;
 
-        internal BubblesTask(BubblesTaskType taskType, bool isUndo, Func<IEnumerable<BubbleViewModel>> getBubbles, Action complete)
-        {
-            this.TaskType = taskType;
-            this.IsUndo = isUndo;
-            _getBubbles = getBubbles;
-            this.Complete = complete;
-        }
+        public BubblesTaskType TaskType { get; private set; }
 
-
-
-        /// <summary>
-        /// Returns the bubbles associated with this task.
-        /// </summary>
+        BubbleViewModel[] _bubbles;
         public IEnumerable<BubbleViewModel> Bubbles
         {
             get
@@ -42,22 +33,19 @@ namespace BubbleBurst.ViewModel
         /// <summary>
         /// Invoked immediately after the task has been performed.
         /// </summary>
-        public Action Complete { get; private set; }
+        public Action OnComplete { get; private set; }
 
         /// <summary>
         /// Returns true if this task is undoing the effects of a previously performed task.
         /// </summary>
         public bool IsUndo { get; private set; }
 
-        /// <summary>
-        /// Returns the kind of task this object represents.
-        /// </summary>
-        public BubblesTaskType TaskType { get; private set; }
-
-
-
-        BubbleViewModel[] _bubbles;
-        readonly Func<IEnumerable<BubbleViewModel>> _getBubbles;
-
+        internal BubblesTask(BubblesTaskType taskType, bool isUndo, Func<IEnumerable<BubbleViewModel>> getBubbles, Action onComplete)
+        {
+            this.TaskType = taskType;
+            this.IsUndo = isUndo;
+            _getBubbles = getBubbles;
+            this.OnComplete = onComplete;
+        }
     }
 }

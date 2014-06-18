@@ -13,6 +13,7 @@ namespace BubbleBurst.ViewModel.Internal
     /// </summary>
     internal class BubblesTaskFactory
     {
+        readonly BubbleMatrixViewModel _bubbleMatrix;
 
         internal BubblesTaskFactory(BubbleMatrixViewModel bubbleMatrix)
         {
@@ -22,14 +23,10 @@ namespace BubbleBurst.ViewModel.Internal
             _bubbleMatrix = bubbleMatrix;
         }
 
-
-
-
         /// <summary>
         /// Creates a sequence of tasks that must be performed for the 
         /// specified collection of bubbles.
         /// </summary>
-        /// <param name="bubblesInGroup">The bubbles for which tasks are created.</param>
         internal IEnumerable<BubblesTask> CreateTasks(BubbleViewModel[] bubblesInGroup)
         {
             var taskTypes = new BubblesTaskType[] 
@@ -60,8 +57,6 @@ namespace BubbleBurst.ViewModel.Internal
                  select this.CreateUndoTask(originalTask))
                 .ToArray();
         }
-
-
 
         BubblesTask CreateUndoTask(BubblesTask originalTask)
         {
@@ -245,11 +240,5 @@ namespace BubbleBurst.ViewModel.Internal
             }
             return movedBubbles;
         }
-
-
-
-
-        readonly BubbleMatrixViewModel _bubbleMatrix;
-
     }
 }

@@ -10,32 +10,54 @@ namespace BubbleBurst.ViewModel
     /// </summary>
     public class BubbleViewModel : ObservableObject
     {
+        readonly BubbleMatrixViewModel _bubbleMatrix;
+        readonly BubbleLocationManager _locationManager;
 
-        internal BubbleViewModel(BubbleMatrixViewModel bubbleMatrix, int row, int column)
-        {
-            if (bubbleMatrix == null)
-                throw new ArgumentNullException("bubbleMatrix");
+        bool _isInBubbleGroup;
+        int? _prevColumnDuringUndo, _prevRowDuringUndo;
 
-            if (row < 0 || bubbleMatrix.RowCount <= row)
-                throw new ArgumentOutOfRangeException("row");
+        static readonly Random _random = new Random(DateTime.Now.Millisecond);
 
-            if (column < 0 || bubbleMatrix.ColumnCount <= column)
-                throw new ArgumentOutOfRangeException("column");
+        public BubbleType BubbleType { get; private set; }
 
-            _bubbleMatrix = bubbleMatrix;
-
-            _locationManager = new BubbleLocationManager();
-            _locationManager.MoveTo(row, column);
-
-            this.BubbleType = GetRandomBubbleType();
-        }
-
-
+        public int Row { get { return _locationManager.Row; } }
+        public int Column { get { return _locationManager.Column; } }
 
         /// <summary>
-        /// Returns the kind of bubble this is.
+        /// The row in which this bubble existed before it moved to its current row.
         /// </summary>
-        public BubbleType BubbleType { get; private set; }
+        public int PreviousRow
+        {
+            get
+            {
+                if (_prevRowDuringUndo.HasValue)
+                {
+                    return _prevRowDuringUndo.Value;
+                }
+                else
+                {
+                    return _locationManager.PreviousRow;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The column in which this bubble existed before it moved to its current column.
+        /// </summary>
+        public int PreviousColumn
+        {
+            get
+            {
+                if (_prevColumnDuringUndo.HasValue)
+                {
+                    return _prevColumnDuringUndo.Value;
+                }
+                else
+                {
+                    return _locationManager.PreviousColumn;
+                }
+            }
+        }
 
         /// <summary>
         /// Returns true if this bubble is a member of the 
@@ -63,60 +85,24 @@ namespace BubbleBurst.ViewModel
             get { return new RelayCommand(_bubbleMatrix.BurstBubbleGroup); }
         }
 
-        /// <summary>
-        /// The column in which this bubble exists.
-        /// </summary>
-        public int Column
+        internal BubbleViewModel(BubbleMatrixViewModel bubbleMatrix, int row, int column)
         {
-            get { return _locationManager.Column; }
+            if (bubbleMatrix == null)
+                throw new ArgumentNullException("bubbleMatrix");
+
+            if (row < 0 || bubbleMatrix.RowCount <= row)
+                throw new ArgumentOutOfRangeException("row");
+
+            if (column < 0 || bubbleMatrix.ColumnCount <= column)
+                throw new ArgumentOutOfRangeException("column");
+
+            _bubbleMatrix = bubbleMatrix;
+
+            _locationManager = new BubbleLocationManager();
+            _locationManager.MoveTo(row, column);
+
+            this.BubbleType = GetRandomBubbleType();
         }
-
-        /// <summary>
-        /// The column in which this bubble existed before it moved to its current column.
-        /// </summary>
-        public int PreviousColumn
-        {
-            get
-            {
-                if (_prevColumnDuringUndo.HasValue)
-                {
-                    return _prevColumnDuringUndo.Value;
-                }
-                else
-                {
-                    return _locationManager.PreviousColumn;
-                }
-            }
-        }
-
-        /// <summary>
-        /// The row in which this bubble existed before it moved to its current row.
-        /// </summary>
-        public int PreviousRow
-        {
-            get
-            {
-                if (_prevRowDuringUndo.HasValue)
-                {
-                    return _prevRowDuringUndo.Value;
-                }
-                else
-                {
-                    return _locationManager.PreviousRow;
-                }
-            }
-        }
-
-        /// <summary>
-        /// The row in which this bubble exists.
-        /// </summary>
-        public int Row
-        {
-            get { return _locationManager.Row; }
-        }
-
-
-
 
         /// <summary>
         /// Causes the bubble to evaluate whether or not it is in a bubble group.
@@ -128,8 +114,6 @@ namespace BubbleBurst.ViewModel
         {
             _bubbleMatrix.VerifyGroupMembership(isMouseOver ? this : null);
         }
-
-
 
         internal void BeginUndo()
         {
@@ -152,15 +136,10 @@ namespace BubbleBurst.ViewModel
             _prevColumnDuringUndo = null;
         }
 
-        /// <summary>
-        /// Updates the logical matrix coordinate of this bubble.
-        /// </summary>
         internal void MoveTo(int row, int column)
         {
             _locationManager.MoveTo(row, column);
         }
-
-
 
         static BubbleType GetRandomBubbleType()
         {
@@ -168,17 +147,5 @@ namespace BubbleBurst.ViewModel
             int highestValue = bubbleTypeValues.Length - 1;
             return (BubbleType)_random.Next(0, highestValue + 1);
         }
-
-
-
-
-        readonly BubbleMatrixViewModel _bubbleMatrix;
-        readonly BubbleLocationManager _locationManager;
-
-        bool _isInBubbleGroup;
-        int? _prevColumnDuringUndo, _prevRowDuringUndo;
-
-        static readonly Random _random = new Random(DateTime.Now.Millisecond);
-
     }
 }

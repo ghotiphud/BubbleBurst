@@ -10,6 +10,10 @@ namespace BubbleBurst.ViewModel.Internal
     /// </summary>
     internal class BubbleFactory
     {
+        readonly BubbleMatrixViewModel _bubbleMatrix;
+        readonly List<BubbleViewModel> _bubbleStagingArea;
+        readonly Random _random = new Random(DateTime.Now.Millisecond);
+        readonly DispatcherTimer _timer;
 
         internal BubbleFactory(BubbleMatrixViewModel bubbleMatrix)
         {
@@ -23,8 +27,6 @@ namespace BubbleBurst.ViewModel.Internal
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(10) };
             _timer.Tick += this.HandleTimerTick;
         }
-
-
 
         /// <summary>
         /// Populates the bubble matrix with new bubbles over time.
@@ -66,13 +68,5 @@ namespace BubbleBurst.ViewModel.Internal
                 }
             }
         }
-
-
-
-        readonly BubbleMatrixViewModel _bubbleMatrix;
-        readonly List<BubbleViewModel> _bubbleStagingArea;
-        readonly Random _random = new Random(DateTime.Now.Millisecond);
-        readonly DispatcherTimer _timer;
-
     }
 }

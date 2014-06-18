@@ -10,22 +10,9 @@ namespace BubbleBurst.ViewModel
     /// </summary>
     public class BubblesTaskManager
     {
-
-        internal BubblesTaskManager(BubbleMatrixViewModel bubbleMatrix)
-        {
-            _bubblesTaskFactory = new BubblesTaskFactory(bubbleMatrix);
-            _pendingTasks = new Queue<BubblesTask>();
-            _undoStack = new Stack<IEnumerable<BubblesTask>>();
-        }
-
-
-
-        /// <summary>
-        /// Raised when tasks are available to be performed.
-        /// </summary>
-        public event EventHandler PendingTasksAvailable;
-
-
+        readonly BubblesTaskFactory _bubblesTaskFactory;
+        readonly Queue<BubblesTask> _pendingTasks;
+        readonly Stack<IEnumerable<BubblesTask>> _undoStack;
 
         /// <summary>
         /// Returns true if an undo operation can be performed at this time.
@@ -35,8 +22,17 @@ namespace BubbleBurst.ViewModel
             get { return _undoStack.Any(); }
         }
 
+        /// <summary>
+        /// Raised when tasks are available to be performed.
+        /// </summary>
+        public event EventHandler PendingTasksAvailable;
 
-
+        internal BubblesTaskManager(BubbleMatrixViewModel bubbleMatrix)
+        {
+            _bubblesTaskFactory = new BubblesTaskFactory(bubbleMatrix);
+            _pendingTasks = new Queue<BubblesTask>();
+            _undoStack = new Stack<IEnumerable<BubblesTask>>();
+        }
 
         /// <summary>
         /// Returns the next pending task if one exists, or null.
@@ -46,12 +42,9 @@ namespace BubbleBurst.ViewModel
             return _pendingTasks.Any() ? _pendingTasks.Dequeue() : null;
         }
 
-
-
         /// <summary>
         /// Publishs a set of tasks that will burst a bubble group.
         /// </summary>
-        /// <param name="bubblesInGroup">The bubbles to burst.</param>
         internal void PublishTasks(BubbleViewModel[] bubblesInGroup)
         {
             var tasks = _bubblesTaskFactory.CreateTasks(bubblesInGroup);
@@ -69,16 +62,11 @@ namespace BubbleBurst.ViewModel
             this.PublishTasks(undoTasks);
         }
 
-        /// <summary>
-        /// Initializes this object back to its original state.
-        /// </summary>
         internal void Reset()
         {
             _pendingTasks.Clear();
             _undoStack.Clear();
         }
-
-
 
         void ArchiveTasks(IEnumerable<BubblesTask> tasks)
         {
@@ -103,13 +91,5 @@ namespace BubbleBurst.ViewModel
                 handler(this, EventArgs.Empty);
             }
         }
-
-
-
-
-        readonly BubblesTaskFactory _bubblesTaskFactory;
-        readonly Queue<BubblesTask> _pendingTasks;
-        readonly Stack<IEnumerable<BubblesTask>> _undoStack;
-
     }
 }
