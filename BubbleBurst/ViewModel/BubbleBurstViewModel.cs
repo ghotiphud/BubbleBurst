@@ -9,24 +9,11 @@ namespace BubbleBurst.ViewModel
     /// </summary>
     public class BubbleBurstViewModel : ObservableObject
     {
-        GameOverViewModel _gameOver;
-
-        /// <summary>
-        /// Returns the ViewModel responsible for managing the matrix of bubbles.
-        /// </summary>
         public BubbleMatrixViewModel BubbleMatrix { get; private set; }
 
-        /// <summary>
-        /// Returns true if the application can currently perform an undo operation.
-        /// </summary>
-        public bool CanUndo
-        {
-            get { return this.GameOver == null && this.BubbleMatrix.CanUndo; }
-        }
+        public bool CanUndo { get { return this.GameOver == null && this.BubbleMatrix.CanUndo; } }
 
-        /// <summary>
-        /// Returns the ViewModel used by the game-over dialog.
-        /// </summary>
+        GameOverViewModel _gameOver;
         public GameOverViewModel GameOver
         {
             get { return _gameOver; }
@@ -44,18 +31,11 @@ namespace BubbleBurst.ViewModel
         /// <summary>
         /// Returns the command that starts a new game of BubbleBurst.
         /// </summary>
-        public ICommand RestartCommand
-        {
-            get { return new RelayCommand(this.BubbleMatrix.StartNewGame); }
-        }
-
+        public ICommand RestartCommand { get { return new RelayCommand(this.BubbleMatrix.StartNewGame); } }
         /// <summary>
         /// Returns the command that un-bursts the previously burst bubble group.
         /// </summary>
-        public ICommand UndoCommand
-        {
-            get { return new RelayCommand(this.BubbleMatrix.Undo, () => this.CanUndo); }
-        }
+        public ICommand UndoCommand { get { return new RelayCommand(this.BubbleMatrix.Undo, () => this.CanUndo); } }
 
         public BubbleBurstViewModel()
         {

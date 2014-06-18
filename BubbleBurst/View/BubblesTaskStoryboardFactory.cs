@@ -57,14 +57,14 @@ namespace BubbleBurst.View
             switch (task.TaskType)
             {
                 case BubblesTaskType.Burst:
-                    millisecondsPerUnit = 250;
+                    millisecondsPerUnit = 150;
                     getTo = cp => (task.IsUndo ? 1.0 : 0.0);
                     animatedProperty = UIElement.OpacityProperty;
                     bubbles = task.Bubbles;
                     break;
 
                 case BubblesTaskType.MoveDown:
-                    millisecondsPerUnit = 115;
+                    millisecondsPerUnit = 50;
                     getTo = _bubbleCanvas.CalculateTop;
                     animatedProperty = Canvas.TopProperty;
 
@@ -78,7 +78,7 @@ namespace BubbleBurst.View
                     break;
 
                 case BubblesTaskType.MoveRight:
-                    millisecondsPerUnit = 115;
+                    millisecondsPerUnit = 50;
                     getTo = _bubbleCanvas.CalculateLeft;
                     animatedProperty = Canvas.LeftProperty;
 

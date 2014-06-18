@@ -65,17 +65,17 @@
                     <BeginStoryboard>
                         <Storyboard>
                             <thriple:EasingDoubleAnimation 
-                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
-                Duration="0:0:0.2"
-                Equation="CubicEaseInOut"
-                To="1.1"
-                />
+                                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                Duration="0:0:0.1"
+                                Equation="CubicEaseInOut"
+                                To="1.1"
+                                />
                             <thriple:EasingDoubleAnimation 
-                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
-                Duration="0:0:0.2"
-                Equation="CubicEaseInOut"
-                To="1.1"
-                />
+                                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                Duration="0:0:0.1"
+                                Equation="CubicEaseInOut"
+                                To="1.1"
+                                />
                         </Storyboard>
                     </BeginStoryboard>
                 </DataTrigger.EnterActions>
@@ -83,17 +83,17 @@
                     <BeginStoryboard>
                         <Storyboard>
                             <thriple:EasingDoubleAnimation 
-                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
-                Duration="0:0:0.1"
-                Equation="CubicEaseInOut"
-                To="1"
-                />
+                                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                Duration="0:0:0.1"
+                                Equation="CubicEaseInOut"
+                                To="1"
+                                />
                             <thriple:EasingDoubleAnimation 
-                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
-                Duration="0:0:0.1"
-                Equation="CubicEaseInOut"
-                To="1"
-                />
+                                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                Duration="0:0:0.1"
+                                Equation="CubicEaseInOut"
+                                To="1"
+                                />
                         </Storyboard>
                     </BeginStoryboard>
                 </DataTrigger.ExitActions>
@@ -117,37 +117,37 @@
     <!-- STORYBOARDS -->
     <Storyboard x:Key="BubbleLoadedStoryboard">
         <thriple:EasingDoubleAnimation 
-      Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" 
-      Duration="0:0:1.25"
-      Equation="CubicEaseInOut"
-      FillBehavior="Stop"
-      From="0" 
-      To="1"   
-      />
+            Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" 
+            Duration="0:0:0.5"
+            Equation="CubicEaseInOut"
+            FillBehavior="Stop"
+            From="0" 
+            To="1"   
+            />
         <thriple:EasingDoubleAnimation 
-      Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" 
-      Duration="0:0:1.25"
-      Equation="CubicEaseInOut"
-      FillBehavior="Stop" 
-      From="0" 
-      To="1"  
-      />
+            Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" 
+            Duration="0:0:0.5"
+            Equation="CubicEaseInOut"
+            FillBehavior="Stop" 
+            From="0" 
+            To="1"  
+            />
         <thriple:EasingDoubleAnimation 
-      Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[1].(TranslateTransform.X)" 
-      Duration="0:0:1.25"
-      Equation="CubicEaseOut"
-      FillBehavior="Stop"
-      From="-21" 
-      To="0"
-      />
+            Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[1].(TranslateTransform.X)" 
+            Duration="0:0:0.5"
+            Equation="CubicEaseOut"
+            FillBehavior="Stop"
+            From="-21" 
+            To="0"
+            />
         <thriple:EasingDoubleAnimation 
-      Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[1].(TranslateTransform.Y)" 
-      Duration="0:0:1.25"
-      Equation="CubicEaseOut"
-      FillBehavior="Stop" 
-      From="-21" 
-      To="0"
-      />
+            Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[1].(TranslateTransform.Y)" 
+            Duration="0:0:0.5"
+            Equation="CubicEaseOut"
+            FillBehavior="Stop" 
+            From="-21" 
+            To="0"
+            />
     </Storyboard>
 
 

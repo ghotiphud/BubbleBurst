@@ -13,34 +13,14 @@ namespace BubbleBurst.ViewModel
     /// </summary>
     public class BubbleMatrixViewModel : ObservableObject
     {
-        internal BubbleMatrixViewModel()
-        {
-            _bubblesInternal = new ObservableCollection<BubbleViewModel>();
-            this.Bubbles = new ReadOnlyObservableCollection<BubbleViewModel>(_bubblesInternal);
+        readonly BubbleFactory _bubbleFactory;
+        readonly BubbleGroup _bubbleGroup;
+        readonly Stack<int> _bubbleGroupSizeStack;
+        readonly ObservableCollection<BubbleViewModel> _bubblesInternal;
 
-            this.TaskManager = new BubblesTaskManager(this);
+        int _columnCount, _rowCount;
+        bool _isIdle;
 
-            _bubbleFactory = new BubbleFactory(this);
-
-            _bubbleGroup = new BubbleGroup(this.Bubbles);
-
-            _bubbleGroupSizeStack = new Stack<int>();
-
-            _isIdle = true;
-        }
-
-
-        /// <summary>
-        /// Raised when there are no more bubble groups left to burst.
-        /// </summary>
-        public event EventHandler GameEnded;
-
-
-
-
-        /// <summary>
-        /// Returns a read-only collection of all bubbles in the bubble matrix.
-        /// </summary>
         public ReadOnlyObservableCollection<BubbleViewModel> Bubbles { get; private set; }
 
         /// <summary>
@@ -66,8 +46,6 @@ namespace BubbleBurst.ViewModel
         /// </summary>
         public BubblesTaskManager TaskManager { get; private set; }
 
-
-
         internal bool CanUndo
         {
             get { return this.IsIdle && this.TaskManager.CanUndo; }
@@ -88,13 +66,6 @@ namespace BubbleBurst.ViewModel
             get { return _rowCount; }
         }
 
-
-
-
-
-        /// <summary>
-        /// Removes all bubbles from the matrix.
-        /// </summary>
         public void ClearBubbles()
         {
             if (!this.IsIdle)
@@ -104,11 +75,30 @@ namespace BubbleBurst.ViewModel
         }
 
         /// <summary>
+        /// Raised when there are no more bubble groups left to burst.
+        /// </summary>
+        public event EventHandler GameEnded;
+
+        internal BubbleMatrixViewModel()
+        {
+            _bubblesInternal = new ObservableCollection<BubbleViewModel>();
+            this.Bubbles = new ReadOnlyObservableCollection<BubbleViewModel>(_bubblesInternal);
+
+            this.TaskManager = new BubblesTaskManager(this);
+
+            _bubbleFactory = new BubbleFactory(this);
+
+            _bubbleGroup = new BubbleGroup(this.Bubbles);
+
+            _bubbleGroupSizeStack = new Stack<int>();
+
+            _isIdle = true;
+        }
+
+        /// <summary>
         /// Updates the number of rows and columns that 
         /// the matrix should contain.
         /// </summary>
-        /// <param name="rowCount">The number of bubble rows.</param>
-        /// <param name="columnCount">The number of bubble columns.</param>
         public void SetDimensions(int rowCount, int columnCount)
         {
             if (!this.IsIdle)
@@ -124,9 +114,6 @@ namespace BubbleBurst.ViewModel
             _columnCount = columnCount;
         }
 
-        /// <summary>
-        /// Begins a new game of BubbleBurst with a new set of bubbles.
-        /// </summary>
         public void StartNewGame()
         {
             // Reset game state.
@@ -158,8 +145,6 @@ namespace BubbleBurst.ViewModel
                 this.TaskManager.Undo();
             }
         }
-
-
 
         internal void AddBubble(BubbleViewModel bubble)
         {
@@ -215,8 +200,6 @@ namespace BubbleBurst.ViewModel
             }
         }
 
-
-
         bool IsInBubbleGroup(BubbleViewModel bubble)
         {
             return new BubbleGroup(this.Bubbles).FindBubbleGroup(bubble).HasBubbles;
@@ -230,17 +213,5 @@ namespace BubbleBurst.ViewModel
                 handler(this, EventArgs.Empty);
             }
         }
-
-
-
-
-        readonly BubbleFactory _bubbleFactory;
-        readonly BubbleGroup _bubbleGroup;
-        readonly Stack<int> _bubbleGroupSizeStack;
-        readonly ObservableCollection<BubbleViewModel> _bubblesInternal;
-
-        int _columnCount, _rowCount;
-        bool _isIdle;
-
     }
 }
