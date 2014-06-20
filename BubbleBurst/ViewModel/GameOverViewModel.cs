@@ -2,7 +2,10 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
-using MvvmFoundation.Wpf;
+using System.Reactive.Subjects;
+using System.Reactive;
+using System.Reactive.Linq;
+using ReactiveUI;
 
 namespace BubbleBurst.ViewModel
 {
@@ -19,12 +22,13 @@ namespace BubbleBurst.ViewModel
         /// <summary>
         /// Returns the command that exits the application.
         /// </summary>
-        public ICommand QuitCommand { get; private set; }
+        public IReactiveCommand QuitCommand { get; private set; }
 
         /// <summary>
         /// Raised when the game-over dialog should be closed.
         /// </summary>
-        public event EventHandler RequestClose;
+        readonly Subject<bool> _requestClose = new Subject<bool>();
+        public IObservable<bool> RequestClose { get { return _requestClose.AsObservable(); } }
 
         internal GameOverViewModel(BubbleMatrixViewModel bubbleMatrix)
         {
@@ -45,7 +49,8 @@ namespace BubbleBurst.ViewModel
 
             this.Subtitle = "Most bubbles popped at once: " + bubbleMatrix.MostBubblesPoppedAtOnce;
 
-            this.QuitCommand = new RelayCommand(Application.Current.Shutdown);
+            QuitCommand = new ReactiveCommand();
+            QuitCommand.Subscribe(x => Application.Current.Shutdown());
         }
 
         /// <summary>
@@ -66,11 +71,7 @@ namespace BubbleBurst.ViewModel
 
         void RaiseRequestClose()
         {
-            var handler = this.RequestClose;
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
+            _requestClose.OnNext(true);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using BubbleBurst.ViewModel;
+using ReactiveUI;
 
 namespace BubbleBurst.View
 {
@@ -10,10 +11,11 @@ namespace BubbleBurst.View
     /// The top-level View of the game, which contains a bubble matrix,
     /// game-over dialog, and the context menu.
     /// </summary>
-    public partial class BubbleBurstView : UserControl
+    public partial class BubbleBurstView : UserControl, IViewFor<BubbleBurstViewModel>
     {
         // From XAML: BubbleMatrixView _bubbleMatrixView;
-        readonly BubbleBurstViewModel _bubbleBurst;
+        public BubbleBurstViewModel ViewModel { get; set; }
+        object IViewFor.ViewModel { get { return ViewModel; } set { ViewModel = (BubbleBurstViewModel)value; } }
 
         public BubbleBurstView()
         {
@@ -21,7 +23,7 @@ namespace BubbleBurst.View
 
             InitializeComponent();
 
-            _bubbleBurst = base.DataContext as BubbleBurstViewModel;
+            ViewModel = base.DataContext as BubbleBurstViewModel;
             _bubbleMatrixView.MatrixDimensionsAvailable += this.HandleMatrixDimensionsAvailable;
         }
 
@@ -57,9 +59,9 @@ namespace BubbleBurst.View
                 Keyboard.Modifiers == ModifierKeys.Control &&
                 e.Key == Key.Z;
 
-            if (undo && _bubbleBurst.UndoCommand.CanExecute(null))
+            if (undo && ViewModel.UndoCommand.CanExecute(null))
             {
-                _bubbleBurst.UndoCommand.Execute(null);
+                ViewModel.UndoCommand.Execute(null);
                 e.Handled = true;
             }
         }
@@ -68,8 +70,8 @@ namespace BubbleBurst.View
         {
             int rows = _bubbleMatrixView.RowCount;
             int cols = _bubbleMatrixView.ColumnCount;
-            _bubbleBurst.BubbleMatrix.SetDimensions(rows, cols);
-            _bubbleBurst.BubbleMatrix.StartNewGame();
+            ViewModel.BubbleMatrix.SetDimensions(rows, cols);
+            ViewModel.BubbleMatrix.StartNewGame();
         }
     }
 }

@@ -3,16 +3,19 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using BubbleBurst.ViewModel;
+using ReactiveUI;
 
 namespace BubbleBurst.View
 {
     /// <summary>
     /// Displays a fixed-size grid of bubbles.
     /// </summary>
-    public partial class BubbleMatrixView : ItemsControl
+    public partial class BubbleMatrixView : ItemsControl, IViewFor<BubbleMatrixViewModel>
     {
+        public BubbleMatrixViewModel ViewModel { get; set; }
+        object IViewFor.ViewModel { get { return ViewModel; } set { ViewModel = (BubbleMatrixViewModel)value; } }
+
         BubbleCanvas _bubbleCanvas;
-        BubbleMatrixViewModel _bubbleMatrix;
         BubblesTaskStoryboardFactory _storyboardFactory;
 
         internal int RowCount { get { return _bubbleCanvas != null ? _bubbleCanvas.RowCount : -1; } }
@@ -54,13 +57,13 @@ namespace BubbleBurst.View
         void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             // Store a reference to the ViewModel.
-            _bubbleMatrix = base.DataContext as BubbleMatrixViewModel;
+            ViewModel = base.DataContext as BubbleMatrixViewModel;
 
-            if (_bubbleMatrix != null)
+            if (ViewModel != null)
             {
                 // Hook the event raised after a bubble group bursts and a series
                 // of animations need to run to advance the game state.
-                _bubbleMatrix.TaskManager.PendingTasksAvailable += delegate
+                ViewModel.TaskManager.PendingTasksAvailable += delegate
                 {
                     this.ProcessNextTask();
                 };
@@ -69,7 +72,7 @@ namespace BubbleBurst.View
 
         void ProcessNextTask()
         {
-            var task = _bubbleMatrix.TaskManager.GetPendingTask();
+            var task = ViewModel.TaskManager.GetPendingTask();
             if (task != null)
             {
                 var storyboard = _storyboardFactory.CreateStoryboard(task);

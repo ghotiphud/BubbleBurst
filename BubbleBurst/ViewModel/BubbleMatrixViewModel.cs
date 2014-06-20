@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using BubbleBurst.ViewModel.Internal;
-using MvvmFoundation.Wpf;
+using ReactiveUI;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace BubbleBurst.ViewModel
 {
@@ -11,7 +14,7 @@ namespace BubbleBurst.ViewModel
     /// Represents the matrix of bubbles and contains 
     /// logic that drives a game to completion.
     /// </summary>
-    public class BubbleMatrixViewModel : ObservableObject
+    public class BubbleMatrixViewModel : ReactiveObject
     {
         readonly BubbleFactory _bubbleFactory;
         readonly BubbleGroup _bubbleGroup;
@@ -22,8 +25,8 @@ namespace BubbleBurst.ViewModel
         internal int ColumnCount { get; private set; }
 
         // Bubbles
-        readonly ObservableCollection<BubbleViewModel> _bubblesInternal;
-        public ReadOnlyObservableCollection<BubbleViewModel> Bubbles { get; private set; }
+        readonly IReactiveList<BubbleViewModel> _bubblesInternal;
+        public IReactiveDerivedList<BubbleViewModel> Bubbles { get; private set; }
 
         internal int MostBubblesPoppedAtOnce { get { return _bubbleGroupSizeStack.Max(); } }
 
@@ -36,30 +39,23 @@ namespace BubbleBurst.ViewModel
         public bool IsIdle
         {
             get { return _isIdle; }
-            internal set
-            {
-                if (value.Equals(_isIdle))
-                    return;
-
-                _isIdle = value;
-
-                base.RaisePropertyChanged("IsIdle");
-            }
+            internal set { this.RaiseAndSetIfChanged(ref _isIdle, value); }
         }
 
         public BubblesTaskManager TaskManager { get; private set; }
 
-        internal bool CanUndo { get { return this.IsIdle && this.TaskManager.CanUndo; } }
+        public IReactiveCommand Undo { get; private set; }
 
         /// <summary>
         /// Raised when there are no more bubble groups left to burst.
         /// </summary>
-        public event EventHandler GameEnded;
+        readonly Subject<bool> _gameEnded = new Subject<bool>();
+        public IObservable<bool> GameEnded { get { return _gameEnded.AsObservable(); } }
 
         internal BubbleMatrixViewModel()
         {
-            _bubblesInternal = new ObservableCollection<BubbleViewModel>();
-            this.Bubbles = new ReadOnlyObservableCollection<BubbleViewModel>(_bubblesInternal);
+            _bubblesInternal = new ReactiveList<BubbleViewModel>();
+            this.Bubbles = _bubblesInternal.CreateDerivedCollection(x => x);
 
             this.TaskManager = new BubblesTaskManager(this);
 
@@ -70,6 +66,10 @@ namespace BubbleBurst.ViewModel
             _bubbleGroupSizeStack = new Stack<int>();
 
             _isIdle = true;
+
+            var canUndo = this.WhenAny(x => x.IsIdle, x => x.TaskManager.CanUndo, (i, cu) => i.Value && cu.Value);
+            Undo = new ReactiveCommand(canUndo);
+            Undo.Subscribe(x => UndoMethod());
         }
 
         /// <summary>
@@ -103,26 +103,7 @@ namespace BubbleBurst.ViewModel
             this.ClearBubbles();
             _bubbleFactory.CreateBubblesAsync();
         }
-
-        /// <summary>
-        /// Reverts the game state to how it was before 
-        /// the most recent group of bubbles was burst.
-        /// </summary>
-        public void Undo()
-        {
-            if (!this.IsIdle)
-                throw new InvalidOperationException("Cannot undo when not idle.");
-
-            if (this.CanUndo)
-            {
-                // Throw away the last bubble group size, 
-                // since that burst is about to be undone.
-                _bubbleGroupSizeStack.Pop();
-
-                this.TaskManager.Undo();
-            }
-        }
-
+        
         internal void AddBubble(BubbleViewModel bubble)
         {
             if (bubble == null)
@@ -185,6 +166,19 @@ namespace BubbleBurst.ViewModel
             }
         }
 
+        /// <summary>
+        /// Reverts the game state to how it was before 
+        /// the most recent group of bubbles was burst.
+        /// </summary>
+        void UndoMethod()
+        {
+            // Throw away the last bubble group size, 
+            // since that burst is about to be undone.
+            _bubbleGroupSizeStack.Pop();
+
+            this.TaskManager.Undo();
+        }
+
         bool IsInBubbleGroup(BubbleViewModel bubble)
         {
             return new BubbleGroup(this.Bubbles).FindBubbleGroup(bubble).HasBubbles;
@@ -192,11 +186,7 @@ namespace BubbleBurst.ViewModel
 
         void RaiseGameEnded()
         {
-            var handler = this.GameEnded;
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
+            _gameEnded.OnNext(true);
         }
     }
 }

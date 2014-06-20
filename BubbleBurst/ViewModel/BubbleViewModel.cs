@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Windows.Input;
 using BubbleBurst.ViewModel.Internal;
-using MvvmFoundation.Wpf;
+using ReactiveUI;
 
 namespace BubbleBurst.ViewModel
 {
     /// <summary>
     /// Represents a bubble in the bubble matrix.
     /// </summary>
-    public class BubbleViewModel : ObservableObject
+    public class BubbleViewModel : ReactiveObject
     {
         readonly BubbleMatrixViewModel _bubbleMatrix;
         readonly BubbleLocationManager _locationManager;
 
-        bool _isInBubbleGroup;
         int? _prevColumnDuringUndo, _prevRowDuringUndo;
 
         static readonly Random _random = new Random(DateTime.Now.Millisecond);
@@ -59,6 +58,7 @@ namespace BubbleBurst.ViewModel
             }
         }
 
+        bool _isInBubbleGroup;
         /// <summary>
         /// Returns true if this bubble is a member of the 
         /// currently active bubble group in the user interface.
@@ -66,21 +66,13 @@ namespace BubbleBurst.ViewModel
         public bool IsInBubbleGroup
         {
             get { return _isInBubbleGroup; }
-            internal set
-            {
-                if (value.Equals(_isInBubbleGroup))
-                    return;
-
-                _isInBubbleGroup = value;
-
-                base.RaisePropertyChanged("IsInBubbleGroup");
-            }
+            internal set { this.RaiseAndSetIfChanged(ref _isInBubbleGroup, value); }
         }
 
         /// <summary>
         /// Returns the command used to burst the bubble group in which this bubble exists.
         /// </summary>
-        public ICommand BurstBubbleGroupCommand { get { return new RelayCommand(_bubbleMatrix.BurstBubbleGroup); } }
+        public IReactiveCommand BurstBubbleGroupCommand { get; private set; }
 
         internal BubbleViewModel(BubbleMatrixViewModel bubbleMatrix, int row, int column)
         {
@@ -99,6 +91,9 @@ namespace BubbleBurst.ViewModel
             _locationManager.MoveTo(row, column);
 
             this.BubbleType = GetRandomBubbleType();
+
+            BurstBubbleGroupCommand = new ReactiveCommand();
+            BurstBubbleGroupCommand.Subscribe(x => _bubbleMatrix.BurstBubbleGroup());
         }
 
         /// <summary>

@@ -2,15 +2,17 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using BubbleBurst.ViewModel;
+using ReactiveUI;
 
 namespace BubbleBurst.View
 {
     /// <summary>
     /// Displays a bubble.
     /// </summary>
-    public partial class BubbleView : Button
+    public partial class BubbleView : Button, IViewFor<BubbleViewModel>
     {
-        BubbleViewModel _bubble;
+        public BubbleViewModel ViewModel { get; set; }
+        object IViewFor.ViewModel { get { return ViewModel; } set { ViewModel = (BubbleViewModel)value; } }
 
         public BubbleView()
         {
@@ -23,22 +25,22 @@ namespace BubbleBurst.View
 
         void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            _bubble = e.NewValue as BubbleViewModel;
+            ViewModel = e.NewValue as BubbleViewModel;
         }
 
         void HandleMouseEnter(object sender, MouseEventArgs e)
         {
-            if (_bubble != null)
+            if (ViewModel != null)
             {
-                _bubble.VerifyGroupMembership(true);
+                ViewModel.VerifyGroupMembership(true);
             }
         }
 
         void HandleMouseLeave(object sender, MouseEventArgs e)
         {
-            if (_bubble != null)
+            if (ViewModel != null)
             {
-                _bubble.VerifyGroupMembership(false);
+                ViewModel.VerifyGroupMembership(false);
             }
         }
     }

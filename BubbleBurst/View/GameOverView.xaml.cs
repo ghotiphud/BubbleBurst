@@ -3,15 +3,18 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using BubbleBurst.ViewModel;
+using ReactiveUI;
 
 namespace BubbleBurst.View
 {
     /// <summary>
     /// The modal dialog shown once a game has ended.
     /// </summary>
-    public partial class GameOverView : UserControl
+    public partial class GameOverView : UserControl, IViewFor<GameOverViewModel>
     {
-        GameOverViewModel _gameOver;
+        public GameOverViewModel ViewModel { get; set; }
+        object IViewFor.ViewModel { get { return ViewModel; } set { ViewModel = (GameOverViewModel)value; } }
+
         readonly Storyboard _outroStoryboard;
 
         public GameOverView()
@@ -25,18 +28,18 @@ namespace BubbleBurst.View
 
         void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            _gameOver = base.DataContext as GameOverViewModel;
+            ViewModel = base.DataContext as GameOverViewModel;
         }
 
         void HandlePlayAgainHyperlinkClick(object sender, RoutedEventArgs e)
         {
-            _gameOver.StartNewGame();
+            ViewModel.StartNewGame();
             _outroStoryboard.Begin(this);
         }
 
         void HandleOutroCompleted(object sender, EventArgs e)
         {
-            _gameOver.Close();
+            ViewModel.Close();
         }
     }
 }

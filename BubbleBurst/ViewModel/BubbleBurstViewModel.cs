@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Windows.Input;
-using MvvmFoundation.Wpf;
+using ReactiveUI;
 
 namespace BubbleBurst.ViewModel
 {
     /// <summary>
     /// This is the top-level view model class.
     /// </summary>
-    public class BubbleBurstViewModel : ObservableObject
+    public class BubbleBurstViewModel : ReactiveObject
     {
         public BubbleMatrixViewModel BubbleMatrix { get; private set; }
         
@@ -15,42 +17,29 @@ namespace BubbleBurst.ViewModel
         public GameOverViewModel GameOver
         {
             get { return _gameOver; }
-            private set
-            {
-                if (value == _gameOver)
-                    return;
-
-                _gameOver = value;
-
-                base.RaisePropertyChanged("GameOver");
-            }
+            private set{ this.RaiseAndSetIfChanged(ref _gameOver, value);}
         }
 
-        private bool CanUndo { get { return this.GameOver == null && this.BubbleMatrix.CanUndo; } }
-
-        /// <summary>
-        /// Returns the command that starts a new game of BubbleBurst.
-        /// </summary>
-        public ICommand RestartCommand { get { return new RelayCommand(this.BubbleMatrix.StartNewGame); } }
+        public IReactiveCommand RestartCommand { get; private set; }
         /// <summary>
         /// Returns the command that un-bursts the previously burst bubble group.
         /// </summary>
-        public ICommand UndoCommand { get { return new RelayCommand(this.BubbleMatrix.Undo, () => this.CanUndo); } }
+        public IReactiveCommand UndoCommand { get; private set; }
 
         public BubbleBurstViewModel()
         {
-            this.BubbleMatrix = new BubbleMatrixViewModel();
-            this.BubbleMatrix.GameEnded += delegate
-            {
+            BubbleMatrix = new BubbleMatrixViewModel();
+            BubbleMatrix.GameEnded.Subscribe(x => { 
                 this.GameOver = new GameOverViewModel(this.BubbleMatrix);
-                this.GameOver.RequestClose += this.HandleGameOverRequestClose;
-            };
-        }
+                this.GameOver.RequestClose.Subscribe(rc => this.GameOver = null);
+            });
 
-        void HandleGameOverRequestClose(object sender, EventArgs e)
-        {
-            this.GameOver.RequestClose -= this.HandleGameOverRequestClose;
-            this.GameOver = null;
+            RestartCommand = new ReactiveCommand();
+            RestartCommand.Subscribe(x => BubbleMatrix.StartNewGame());
+
+            var canUndo = this.WhenAny(x => x.BubbleMatrix.Undo.CanExecuteObservable, x => x.GameOver, (ce, go) => go != null);
+            UndoCommand = new ReactiveCommand(canUndo);
+            UndoCommand.Subscribe(x => BubbleMatrix.Undo.Execute(null));
         }
     }
 }
