@@ -12,12 +12,12 @@ namespace BubbleBurst.ViewModel
     public class BubbleBurstViewModel : ReactiveObject
     {
         public BubbleMatrixViewModel BubbleMatrix { get; private set; }
-        
+
         GameOverViewModel _gameOver;
         public GameOverViewModel GameOver
         {
             get { return _gameOver; }
-            private set{ this.RaiseAndSetIfChanged(ref _gameOver, value);}
+            private set { this.RaiseAndSetIfChanged(ref _gameOver, value); }
         }
 
         public IReactiveCommand RestartCommand { get; private set; }
@@ -29,7 +29,8 @@ namespace BubbleBurst.ViewModel
         public BubbleBurstViewModel()
         {
             BubbleMatrix = new BubbleMatrixViewModel();
-            BubbleMatrix.GameEnded.Subscribe(x => { 
+            BubbleMatrix.GameEnded.Subscribe(x =>
+            {
                 this.GameOver = new GameOverViewModel(this.BubbleMatrix);
                 this.GameOver.RequestClose.Subscribe(rc => this.GameOver = null);
             });
@@ -37,7 +38,11 @@ namespace BubbleBurst.ViewModel
             RestartCommand = new ReactiveCommand();
             RestartCommand.Subscribe(x => BubbleMatrix.StartNewGame());
 
-            var canUndo = this.WhenAny(x => x.BubbleMatrix.Undo.CanExecuteObservable, x => x.GameOver, (ce, go) => go != null);
+            var canUndo = Observable.CombineLatest(
+                this.WhenAnyObservable(x => x.BubbleMatrix.Undo.CanExecuteObservable),
+                this.WhenAnyValue(x => x.GameOver),
+                (ce, go) => ce && go != null);
+
             UndoCommand = new ReactiveCommand(canUndo);
             UndoCommand.Subscribe(x => BubbleMatrix.Undo.Execute(null));
         }
