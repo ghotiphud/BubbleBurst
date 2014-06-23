@@ -1,8 +1,11 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using BubbleBurst.ViewModel;
 using ReactiveUI;
+using System.Reactive;
+using System.Reactive.Linq;
 
 namespace BubbleBurst.View
 {
@@ -18,17 +21,29 @@ namespace BubbleBurst.View
         {
             InitializeComponent();
 
-            base.DataContextChanged += this.HandleDataContextChanged;
-            base.MouseEnter += this.HandleMouseEnter;
-            base.MouseLeave += this.HandleMouseLeave;
+            var dataContextChanged = Observable.FromEventPattern<DependencyPropertyChangedEventHandler, DependencyPropertyChangedEventArgs>(
+                h => base.DataContextChanged += h,
+                h => base.DataContextChanged -= h);
+
+            var mouseEnter = Observable.FromEventPattern<MouseEventHandler, MouseEventArgs>(
+                h => base.MouseEnter += h,
+                h => base.MouseEnter -= h);
+
+            var mouseLeave = Observable.FromEventPattern<MouseEventHandler, MouseEventArgs>(
+                h => base.MouseLeave += h,
+                h => base.MouseLeave -= h);
+
+            dataContextChanged.Subscribe(ev => this.HandleDataContextChanged(ev.EventArgs));
+            mouseEnter.Subscribe(ev => this.HandleMouseEnter());
+            mouseLeave.Subscribe(ev => this.HandleMouseLeave());
         }
 
-        void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        void HandleDataContextChanged(DependencyPropertyChangedEventArgs e)
         {
             ViewModel = e.NewValue as BubbleViewModel;
         }
 
-        void HandleMouseEnter(object sender, MouseEventArgs e)
+        void HandleMouseEnter()
         {
             if (ViewModel != null)
             {
@@ -36,7 +51,7 @@ namespace BubbleBurst.View
             }
         }
 
-        void HandleMouseLeave(object sender, MouseEventArgs e)
+        void HandleMouseLeave()
         {
             if (ViewModel != null)
             {

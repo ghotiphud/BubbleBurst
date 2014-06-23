@@ -21,26 +21,37 @@ namespace BubbleBurst.View
         BubbleCanvas _bubbleCanvas;
         BubblesTaskStoryboardFactory _storyboardFactory;
 
-        internal int RowCount { get { return _bubbleCanvas != null ? _bubbleCanvas.RowCount : -1; } }
-        internal int ColumnCount { get { return _bubbleCanvas != null ? _bubbleCanvas.ColumnCount : -1; } }
+        internal int RowCount { get { return ViewModel.RowCount; } }
+        internal int ColumnCount { get { return ViewModel.ColumnCount; } }
 
-        internal Subject<bool> _matrixDimensionsAvailable = new Subject<bool>();
+        internal Subject<Unit> _matrixDimensionsAvailable = new Subject<Unit>();
         /// <summary>
         /// Raised when the RowCount and ColumnCount properties have meaningful values.
         /// </summary>
-        internal IObservable<bool> MatrixDimensionsAvailable { get { return _matrixDimensionsAvailable.AsObservable(); } }
+        internal IObservable<Unit> MatrixDimensionsAvailable { get { return _matrixDimensionsAvailable.AsObservable(); } }
 
         public BubbleMatrixView()
         {
             InitializeComponent();
 
-            base.DataContextChanged += this.HandleDataContextChanged;
+            var dataContextChanged = Observable.FromEventPattern<DependencyPropertyChangedEventHandler, DependencyPropertyChangedEventArgs>(
+                h => base.DataContextChanged += h,
+                h => base.DataContextChanged -= h);
+
+            dataContextChanged.Subscribe(ev => ViewModel = ev.EventArgs.NewValue as BubbleMatrixViewModel);
+
+            // Hook the event raised after a bubble group bursts and a series
+            // of animations need to run to advance the game state.
+            var taskAvailable = this.WhenAnyObservable(x => x.ViewModel.TaskManager.PendingTasksAvailable);
+            taskAvailable.Subscribe(x => this.ProcessNextTask());
         }
 
         void HandleBubbleCanvasLoaded(object sender, RoutedEventArgs e)
         {
             // Store a reference to the panel that contains the bubbles.
             _bubbleCanvas = sender as BubbleCanvas;
+            _bubbleCanvas.RowCount = this.RowCount;
+            _bubbleCanvas.ColumnCount = this.ColumnCount;
 
             // Create the factory that makes Storyboards used after a bubble group bursts.
             _storyboardFactory = new BubblesTaskStoryboardFactory(_bubbleCanvas);
@@ -51,21 +62,7 @@ namespace BubbleBurst.View
 
         void RaiseMatrixDimensionsAvailable()
         {
-            _matrixDimensionsAvailable.OnNext(true);
-        }
-
-        void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            // Store a reference to the ViewModel.
-            ViewModel = base.DataContext as BubbleMatrixViewModel;
-
-            if (ViewModel != null)
-            {
-                // Hook the event raised after a bubble group bursts and a series
-                // of animations need to run to advance the game state.
-                var taskAvailable = this.WhenAnyObservable(x => x.ViewModel.TaskManager.PendingTasksAvailable);
-                taskAvailable.Subscribe(x => this.ProcessNextTask());
-            }
+            _matrixDimensionsAvailable.OnNext(Unit.Default);
         }
 
         void ProcessNextTask()

@@ -10,10 +10,18 @@ namespace BubbleBurst.View
     /// </summary>
     public class BubbleCanvas : Canvas
     {
-        internal static int BubbleSize { get { return 42; } }
+        internal int BubbleSize
+        {
+            get
+            {
+                var maxWidth = (int)Math.Floor(base.ActualWidth / ColumnCount);
+                var maxHeight = (int)Math.Floor(base.ActualHeight / RowCount);
+                return Math.Min(maxWidth, maxHeight);
+            }
+        }
 
-        internal int RowCount { get { return (int)Math.Floor(base.ActualHeight / BubbleSize); } }
-        internal int ColumnCount { get { return (int)Math.Floor(base.ActualWidth / BubbleSize); } }
+        internal int RowCount { get; set; }
+        internal int ColumnCount { get; set; }
 
         internal double CalculateLeft(FrameworkElement bubbleContainer)
         {

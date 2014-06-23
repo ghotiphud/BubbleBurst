@@ -28,16 +28,19 @@ namespace BubbleBurst.ViewModel
 
         public BubbleBurstViewModel()
         {
-            BubbleMatrix = new BubbleMatrixViewModel();
+            BubbleMatrix = new BubbleMatrixViewModel(12, 12);
+            // GameOver
             BubbleMatrix.GameEnded.Subscribe(x =>
             {
                 this.GameOver = new GameOverViewModel(this.BubbleMatrix);
                 this.GameOver.RequestClose.Subscribe(rc => this.GameOver = null);
             });
 
+            // Restart
             RestartCommand = new ReactiveCommand();
             RestartCommand.Subscribe(x => BubbleMatrix.StartNewGame());
 
+            // Undo
             var canUndo = Observable.CombineLatest(
                 this.WhenAnyObservable(x => x.BubbleMatrix.UndoCommand.CanExecuteObservable),
                 this.WhenAnyValue(x => x.GameOver),

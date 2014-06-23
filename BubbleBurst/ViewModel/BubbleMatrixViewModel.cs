@@ -48,11 +48,14 @@ namespace BubbleBurst.ViewModel
         /// <summary>
         /// Raised when there are no more bubble groups left to burst.
         /// </summary>
-        readonly Subject<bool> _gameEnded = new Subject<bool>();
-        public IObservable<bool> GameEnded { get { return _gameEnded.AsObservable(); } }
+        readonly Subject<Unit> _gameEnded = new Subject<Unit>();
+        public IObservable<Unit> GameEnded { get { return _gameEnded.AsObservable(); } }
 
-        internal BubbleMatrixViewModel()
+        internal BubbleMatrixViewModel(int rowCount, int columnCount)
         {
+            RowCount = rowCount;
+            ColumnCount = columnCount;
+
             _bubblesInternal = new ReactiveList<BubbleViewModel>();
             this.Bubbles = _bubblesInternal.CreateDerivedCollection(x => x);
 
@@ -67,25 +70,6 @@ namespace BubbleBurst.ViewModel
             var canUndo = this.WhenAny(x => x.IsIdle, x => x.TaskManager.CanUndo, (i, cu) => i.Value && cu.Value);
             UndoCommand = new ReactiveCommand(canUndo);
             UndoCommand.Subscribe(x => Undo());
-        }
-
-        /// <summary>
-        /// Updates the number of rows and columns that 
-        /// the matrix should contain.
-        /// </summary>
-        public void SetDimensions(int rowCount, int columnCount)
-        {
-            if (!this.IsIdle)
-                throw new InvalidOperationException("Cannot set matrix dimensions is not idle.");
-
-            if (rowCount < 1)
-                throw new ArgumentOutOfRangeException("rowCount", rowCount, "Must be greater than zero.");
-
-            if (columnCount < 1)
-                throw new ArgumentOutOfRangeException("columnCount", columnCount, "Must be greater than zero.");
-
-            RowCount = rowCount;
-            ColumnCount = columnCount;
         }
 
         public void StartNewGame()
@@ -191,7 +175,7 @@ namespace BubbleBurst.ViewModel
 
         void RaiseGameEnded()
         {
-            _gameEnded.OnNext(true);
+            _gameEnded.OnNext(Unit.Default);
         }
     }
 }

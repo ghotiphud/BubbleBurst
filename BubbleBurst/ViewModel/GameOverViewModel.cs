@@ -27,8 +27,8 @@ namespace BubbleBurst.ViewModel
         /// <summary>
         /// Raised when the game-over dialog should be closed.
         /// </summary>
-        readonly Subject<bool> _requestClose = new Subject<bool>();
-        public IObservable<bool> RequestClose { get { return _requestClose.AsObservable(); } }
+        readonly Subject<Unit> _requestClose = new Subject<Unit>();
+        public IObservable<Unit> RequestClose { get { return _requestClose.AsObservable(); } }
 
         internal GameOverViewModel(BubbleMatrixViewModel bubbleMatrix)
         {
@@ -71,7 +71,7 @@ namespace BubbleBurst.ViewModel
 
         void RaiseRequestClose()
         {
-            _requestClose.OnNext(true);
+            _requestClose.OnNext(Unit.Default);
         }
     }
 }

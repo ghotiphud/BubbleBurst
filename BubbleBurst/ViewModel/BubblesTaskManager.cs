@@ -26,8 +26,8 @@ namespace BubbleBurst.ViewModel
         /// <summary>
         /// Raised when tasks are available to be performed.
         /// </summary>
-        public Subject<bool> _pendingTasksAvailable = new Subject<bool>();
-        public IObservable<bool> PendingTasksAvailable { get { return _pendingTasksAvailable.AsObservable(); } }
+        public Subject<Unit> _pendingTasksAvailable = new Subject<Unit>();
+        public IObservable<Unit> PendingTasksAvailable { get { return _pendingTasksAvailable.AsObservable(); } }
 
         internal BubblesTaskManager(BubbleMatrixViewModel bubbleMatrix)
         {
@@ -89,7 +89,7 @@ namespace BubbleBurst.ViewModel
 
         void RaisePendingTasksAvailable()
         {
-            _pendingTasksAvailable.OnNext(true);
+            _pendingTasksAvailable.OnNext(Unit.Default);
         }
     }
 }

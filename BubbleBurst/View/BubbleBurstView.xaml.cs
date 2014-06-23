@@ -62,11 +62,11 @@ namespace BubbleBurst.View
 
         void HandleWindowPreviewKeyDown(KeyEventArgs e)
         {
-            bool undo =
+            bool undoKeyPressed =
                 Keyboard.Modifiers == ModifierKeys.Control &&
                 e.Key == Key.Z;
 
-            if (undo && ViewModel.UndoCommand.CanExecute(null))
+            if (undoKeyPressed && ViewModel.UndoCommand.CanExecute(null))
             {
                 ViewModel.UndoCommand.Execute(null);
                 e.Handled = true;
@@ -77,7 +77,6 @@ namespace BubbleBurst.View
         {
             int rows = _bubbleMatrixView.RowCount;
             int cols = _bubbleMatrixView.ColumnCount;
-            ViewModel.BubbleMatrix.SetDimensions(rows, cols);
             ViewModel.BubbleMatrix.StartNewGame();
         }
     }
