@@ -16,7 +16,6 @@ namespace BubbleBurst.ViewModel
     /// </summary>
     public class BubbleMatrixViewModel : ReactiveObject
     {
-        readonly BubbleFactory _bubbleFactory;
         readonly BubbleGroup _bubbleGroup;
         readonly Stack<int> _bubbleGroupSizeStack;
 
@@ -44,7 +43,7 @@ namespace BubbleBurst.ViewModel
 
         public BubblesTaskManager TaskManager { get; private set; }
 
-        public IReactiveCommand Undo { get; private set; }
+        public IReactiveCommand UndoCommand { get; private set; }
 
         /// <summary>
         /// Raised when there are no more bubble groups left to burst.
@@ -59,8 +58,6 @@ namespace BubbleBurst.ViewModel
 
             this.TaskManager = new BubblesTaskManager(this);
 
-            _bubbleFactory = new BubbleFactory(this);
-
             _bubbleGroup = new BubbleGroup(this.Bubbles);
 
             _bubbleGroupSizeStack = new Stack<int>();
@@ -68,8 +65,8 @@ namespace BubbleBurst.ViewModel
             _isIdle = true;
 
             var canUndo = this.WhenAny(x => x.IsIdle, x => x.TaskManager.CanUndo, (i, cu) => i.Value && cu.Value);
-            Undo = new ReactiveCommand(canUndo);
-            Undo.Subscribe(x => UndoMethod());
+            UndoCommand = new ReactiveCommand(canUndo);
+            UndoCommand.Subscribe(x => Undo());
         }
 
         /// <summary>
@@ -99,11 +96,19 @@ namespace BubbleBurst.ViewModel
             _bubbleGroupSizeStack.Clear();
             this.TaskManager.Reset();
 
+            InitBubbles();
+        }
+
+        void InitBubbles()
+        {
             // Create a new matrix of bubbles.
             this.ClearBubbles();
-            _bubbleFactory.CreateBubblesAsync();
+            ((ReactiveList<BubbleViewModel>)_bubblesInternal).AddRange(
+                from row in Enumerable.Range(0, RowCount)
+                from col in Enumerable.Range(0, ColumnCount)
+                select new BubbleViewModel(this, row, col));
         }
-        
+
         internal void AddBubble(BubbleViewModel bubble)
         {
             if (bubble == null)
@@ -170,7 +175,7 @@ namespace BubbleBurst.ViewModel
         /// Reverts the game state to how it was before 
         /// the most recent group of bubbles was burst.
         /// </summary>
-        void UndoMethod()
+        void Undo()
         {
             // Throw away the last bubble group size, 
             // since that burst is about to be undone.
