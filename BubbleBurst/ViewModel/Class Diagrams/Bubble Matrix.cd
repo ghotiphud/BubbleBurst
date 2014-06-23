@@ -5,11 +5,8 @@
     <Members>
       <Field Name="_bubbleGroupSizeStack" Hidden="true" />
       <Field Name="_bubblesInternal" Hidden="true" />
-      <Field Name="_columnCount" Hidden="true" />
       <Field Name="_isIdle" Hidden="true" />
-      <Field Name="_rowCount" Hidden="true" />
       <Method Name="BubbleMatrixViewModel" Hidden="true" />
-      <Property Name="CanUndo" Hidden="true" />
       <Property Name="IsIdle" Hidden="true" />
       <Property Name="MostBubblesPoppedAtOnce" Hidden="true" />
       <Method Name="RaiseGameEnded" Hidden="true" />
@@ -17,22 +14,13 @@
       <Property Name="TaskManager" Hidden="true" />
       <Method Name="Undo" Hidden="true" />
     </Members>
-    <AssociationLine Name="_bubbleFactory" Type="BubbleBurst.ViewModel.Internal.BubbleFactory">
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.058" Y="0.06" />
-      </MemberNameLabel>
-    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>CAgIAFAABAwgRAAABAAgQAIAQAAADgAgDACAAAACAgA=</HashCode>
-      <FileName>BubbleMatrixViewModel.cs</FileName>
+      <HashCode>CAgYABAAAAwgBAAABAAkQAIIQIAADgAgBACAAAACAgA=</HashCode>
+      <FileName>ViewModel\BubbleMatrixViewModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Field Name="_bubbleFactory" />
       <Field Name="_bubbleGroup" />
     </ShowAsAssociation>
-    <ShowAsCollectionAssociation>
-      <Property Name="Bubbles" />
-    </ShowAsCollectionAssociation>
   </Class>
   <Class Name="BubbleBurst.ViewModel.BubbleViewModel">
     <Position X="6.25" Y="2.25" Width="2.25" />
@@ -53,22 +41,7 @@
     </Members>
     <TypeIdentifier>
       <HashCode>AEAAAAAAAAQACAABAgBIAAAgAAAIAgAAJCQIQEAAAAE=</HashCode>
-      <FileName>BubbleViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="BubbleBurst.ViewModel.Internal.BubbleFactory">
-    <Position X="6.25" Y="1" Width="1.75" />
-    <Members>
-      <Field Name="_bubbleMatrix" Hidden="true" />
-      <Field Name="_bubbleStagingArea" Hidden="true" />
-      <Field Name="_random" Hidden="true" />
-      <Field Name="_timer" Hidden="true" />
-      <Method Name="BubbleFactory" Hidden="true" />
-      <Method Name="HandleTimerTick" Hidden="true" />
-    </Members>
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAiAAAAAAAAAAAAAAAAAACAACQAAAAAAAE=</HashCode>
-      <FileName>Internal\BubbleFactory.cs</FileName>
+      <FileName>ViewModel\BubbleViewModel.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="BubbleBurst.ViewModel.Internal.BubbleGroup">
@@ -84,8 +57,8 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAQAEAAAAABAAIBAAAAAAAAAAAAgAgAAAAACAAAAAAg=</HashCode>
-      <FileName>Internal\BubbleGroup.cs</FileName>
+      <HashCode>AAQAEAAAAABABIBAAAAAAAAAAAAgAgAAAAACAAAAAAg=</HashCode>
+      <FileName>ViewModel\Internal\BubbleGroup.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

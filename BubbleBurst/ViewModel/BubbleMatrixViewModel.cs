@@ -96,10 +96,10 @@ namespace BubbleBurst.ViewModel
             _bubbleGroupSizeStack.Clear();
             this.TaskManager.Reset();
 
-            InitBubbles();
+            InitializeBubbles();
         }
 
-        void InitBubbles()
+        void InitializeBubbles()
         {
             // Create a new matrix of bubbles.
             this.ClearBubbles();

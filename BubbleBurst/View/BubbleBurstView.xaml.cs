@@ -4,6 +4,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using BubbleBurst.ViewModel;
 using ReactiveUI;
+using System.Reactive;
+using System.Reactive.Linq;
 
 namespace BubbleBurst.View
 {
@@ -24,7 +26,8 @@ namespace BubbleBurst.View
             InitializeComponent();
 
             ViewModel = base.DataContext as BubbleBurstViewModel;
-            _bubbleMatrixView.MatrixDimensionsAvailable += this.HandleMatrixDimensionsAvailable;
+
+            _bubbleMatrixView.MatrixDimensionsAvailable.Subscribe(x => this.HandleMatrixDimensionsAvailable());
         }
 
         static void LoadBubbleViewResources()
@@ -40,20 +43,24 @@ namespace BubbleBurst.View
             Application.Current.Resources.MergedDictionaries.Add(bubbleViewResources);
         }
 
-        void HandleMatrixDimensionsAvailable(object sender, EventArgs e)
+        void HandleMatrixDimensionsAvailable()
         {
             // Hook the keyboard event on the Window because this
             // control does not receive keystrokes.
             var window = Window.GetWindow(this);
             if (window != null)
             {
-                window.PreviewKeyDown += this.HandleWindowPreviewKeyDown;
+                var keyDown = Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(
+                    h => window.PreviewKeyDown += h,
+                    h => window.PreviewKeyDown -= h);
+
+                keyDown.Subscribe(ev => this.HandleWindowPreviewKeyDown(ev.EventArgs));
             }
 
             this.StartNewGame();
         }
 
-        void HandleWindowPreviewKeyDown(object sender, KeyEventArgs e)
+        void HandleWindowPreviewKeyDown(KeyEventArgs e)
         {
             bool undo =
                 Keyboard.Modifiers == ModifierKeys.Control &&

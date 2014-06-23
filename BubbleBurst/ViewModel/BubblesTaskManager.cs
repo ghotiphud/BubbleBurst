@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using BubbleBurst.ViewModel.Internal;
+using System.Reactive.Subjects;
+using System.Reactive;
+using System.Reactive.Linq;
+using ReactiveUI;
 
 namespace BubbleBurst.ViewModel
 {
     /// <summary>
     /// Responsible for the tasks used to burst and un-burst bubble groups.  
     /// </summary>
-    public class BubblesTaskManager
+    public class BubblesTaskManager : ReactiveObject
     {
         readonly BubblesTaskFactory _bubblesTaskFactory;
         readonly Queue<BubblesTask> _pendingTasks;
@@ -22,7 +26,8 @@ namespace BubbleBurst.ViewModel
         /// <summary>
         /// Raised when tasks are available to be performed.
         /// </summary>
-        public event EventHandler PendingTasksAvailable;
+        public Subject<bool> _pendingTasksAvailable = new Subject<bool>();
+        public IObservable<bool> PendingTasksAvailable { get { return _pendingTasksAvailable.AsObservable(); } }
 
         internal BubblesTaskManager(BubbleMatrixViewModel bubbleMatrix)
         {
@@ -63,11 +68,13 @@ namespace BubbleBurst.ViewModel
         {
             _pendingTasks.Clear();
             _undoStack.Clear();
+            this.raisePropertyChanged("CanUndo");
         }
 
         void ArchiveTasks(IEnumerable<BubblesTask> tasks)
         {
             _undoStack.Push(tasks);
+            this.raisePropertyChanged("CanUndo");
         }
 
         void PublishTasks(IEnumerable<BubblesTask> tasks)
@@ -82,11 +89,7 @@ namespace BubbleBurst.ViewModel
 
         void RaisePendingTasksAvailable()
         {
-            var handler = this.PendingTasksAvailable;
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
+            _pendingTasksAvailable.OnNext(true);
         }
     }
 }

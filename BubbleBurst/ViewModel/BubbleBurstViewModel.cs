@@ -41,7 +41,7 @@ namespace BubbleBurst.ViewModel
             var canUndo = Observable.CombineLatest(
                 this.WhenAnyObservable(x => x.BubbleMatrix.UndoCommand.CanExecuteObservable),
                 this.WhenAnyValue(x => x.GameOver),
-                (ce, go) => ce && go != null);
+                (ce, go) => ce && go == null);
 
             UndoCommand = new ReactiveCommand(canUndo);
             UndoCommand.Subscribe(x => BubbleMatrix.UndoCommand.Execute(null));

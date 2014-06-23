@@ -4,6 +4,9 @@ using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using BubbleBurst.ViewModel;
 using ReactiveUI;
+using System.Reactive;
+using System.Reactive.Subjects;
+using System.Reactive.Linq;
 
 namespace BubbleBurst.View
 {
@@ -21,10 +24,11 @@ namespace BubbleBurst.View
         internal int RowCount { get { return _bubbleCanvas != null ? _bubbleCanvas.RowCount : -1; } }
         internal int ColumnCount { get { return _bubbleCanvas != null ? _bubbleCanvas.ColumnCount : -1; } }
 
+        internal Subject<bool> _matrixDimensionsAvailable = new Subject<bool>();
         /// <summary>
         /// Raised when the RowCount and ColumnCount properties have meaningful values.
         /// </summary>
-        internal event EventHandler MatrixDimensionsAvailable;
+        internal IObservable<bool> MatrixDimensionsAvailable { get { return _matrixDimensionsAvailable.AsObservable(); } }
 
         public BubbleMatrixView()
         {
@@ -47,11 +51,7 @@ namespace BubbleBurst.View
 
         void RaiseMatrixDimensionsAvailable()
         {
-            var handler = this.MatrixDimensionsAvailable;
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
+            _matrixDimensionsAvailable.OnNext(true);
         }
 
         void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -63,10 +63,8 @@ namespace BubbleBurst.View
             {
                 // Hook the event raised after a bubble group bursts and a series
                 // of animations need to run to advance the game state.
-                ViewModel.TaskManager.PendingTasksAvailable += delegate
-                {
-                    this.ProcessNextTask();
-                };
+                var taskAvailable = this.WhenAnyObservable(x => x.ViewModel.TaskManager.PendingTasksAvailable);
+                taskAvailable.Subscribe(x => this.ProcessNextTask());
             }
         }
 
