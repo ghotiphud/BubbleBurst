@@ -61,6 +61,7 @@ namespace BubbleBurst.ViewModel
         {
             var originalTasks = _undoStack.Pop();
             this.raisePropertyChanged("CanUndo");
+
             var undoTasks = _bubblesTaskFactory.CreateUndoTasks(originalTasks);
             this.PublishTasks(undoTasks);
         }

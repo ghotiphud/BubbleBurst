@@ -13,8 +13,6 @@ namespace BubbleBurst.ViewModel
         readonly BubbleMatrixViewModel _bubbleMatrix;
         readonly BubbleLocationManager _locationManager;
 
-        int? _prevColumnDuringUndo, _prevRowDuringUndo;
-
         static readonly Random _random = new Random(DateTime.Now.Millisecond);
 
         public BubbleType BubbleType { get; private set; }
@@ -25,38 +23,11 @@ namespace BubbleBurst.ViewModel
         /// <summary>
         /// The row in which this bubble existed before it moved to its current row.
         /// </summary>
-        public int PreviousRow
-        {
-            get
-            {
-                if (_prevRowDuringUndo.HasValue)
-                {
-                    return _prevRowDuringUndo.Value;
-                }
-                else
-                {
-                    return _locationManager.PreviousRow;
-                }
-            }
-        }
-
+        public int PreviousRow { get { return _locationManager.PreviousRow; } }
         /// <summary>
         /// The column in which this bubble existed before it moved to its current column.
         /// </summary>
-        public int PreviousColumn
-        {
-            get
-            {
-                if (_prevColumnDuringUndo.HasValue)
-                {
-                    return _prevColumnDuringUndo.Value;
-                }
-                else
-                {
-                    return _locationManager.PreviousColumn;
-                }
-            }
-        }
+        public int PreviousColumn { get { return _locationManager.PreviousColumn; } }
 
         bool _isInBubbleGroup;
         /// <summary>
@@ -109,23 +80,12 @@ namespace BubbleBurst.ViewModel
 
         internal void BeginUndo()
         {
-            // During an Undo operation we need to treat the current row
-            // and column as the previous row and column, since the bubble
-            // will be moving from where it currently is to where it used
-            // to be.  This logic is kept in the BubbleViewModel class in
-            // order to keep BubbleLocationManager simple.
-            _prevRowDuringUndo = this.Row;
-            _prevColumnDuringUndo = this.Column;
-
             _locationManager.MoveToPreviousLocation();
         }
 
         internal void EndUndo()
         {
-            // Now that the Undo operation is finished,
-            // it's back to business as usual.
-            _prevRowDuringUndo = null;
-            _prevColumnDuringUndo = null;
+            _locationManager.EndMoveToPreviousLocation();
         }
 
         internal void MoveTo(int row, int column)

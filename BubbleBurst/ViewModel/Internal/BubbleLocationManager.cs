@@ -11,11 +11,38 @@ namespace BubbleBurst.ViewModel.Internal
         BubbleLocation? _currentLocation;
         readonly Stack<BubbleLocation> _previousLocations;
 
+        // During an Undo operation, the bubble moves from the current location
+        // to where it used to be.  Therefore, we need to treat the current row
+        // and column as the previous row and column.
+        BubbleLocation? _tempUndoLocation;
+
         internal int Row { get { return _currentLocation.HasValue ? _currentLocation.Value.Row : -1; } }
         internal int Column { get { return _currentLocation.HasValue ? _currentLocation.Value.Column : -1; } }
 
-        internal int PreviousRow { get { return _previousLocations.Any() ? _previousLocations.Peek().Row : -1; } }
-        internal int PreviousColumn { get { return _previousLocations.Any() ? _previousLocations.Peek().Column : -1; } }
+        internal int PreviousRow
+        {
+            get
+            {
+                if (_tempUndoLocation.HasValue)
+                {
+                    return _tempUndoLocation.Value.Row;
+                }
+
+                return _previousLocations.Any() ? _previousLocations.Peek().Row : -1;
+            }
+        }
+        internal int PreviousColumn
+        {
+            get
+            {
+                if (_tempUndoLocation.HasValue)
+                {
+                    return _tempUndoLocation.Value.Column;
+                }
+
+                return _previousLocations.Any() ? _previousLocations.Peek().Column : -1;
+            }
+        }
 
         internal BubbleLocationManager()
         {
@@ -36,8 +63,14 @@ namespace BubbleBurst.ViewModel.Internal
         {
             if (_previousLocations.Any())
             {
+                _tempUndoLocation = _currentLocation;
                 _currentLocation = _previousLocations.Pop();
             }
+        }
+
+        internal void EndMoveToPreviousLocation()
+        {
+            _tempUndoLocation = null;
         }
 
         private struct BubbleLocation
