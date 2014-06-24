@@ -57,7 +57,7 @@ namespace BubbleBurst.View
             switch (task.TaskType)
             {
                 case BubblesTaskType.Burst:
-                    millisecondsPerUnit = 150;
+                    millisecondsPerUnit = 100;
                     getTo = cp => (task.IsUndo ? 1.0 : 0.0);
                     animatedProperty = UIElement.OpacityProperty;
                     bubbles = task.Bubbles;

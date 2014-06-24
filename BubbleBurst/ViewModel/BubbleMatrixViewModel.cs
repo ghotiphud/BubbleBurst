@@ -20,8 +20,8 @@ namespace BubbleBurst.ViewModel
         readonly Stack<int> _bubbleGroupSizeStack;
 
         // The Matrix
-        internal int RowCount { get; private set; }
-        internal int ColumnCount { get; private set; }
+        public int RowCount { get; private set; }
+        public int ColumnCount { get; private set; }
 
         // Bubbles
         readonly IReactiveList<BubbleViewModel> _bubblesInternal;

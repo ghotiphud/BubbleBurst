@@ -21,15 +21,6 @@ namespace BubbleBurst.View
         BubbleCanvas _bubbleCanvas;
         BubblesTaskStoryboardFactory _storyboardFactory;
 
-        internal int RowCount { get { return ViewModel.RowCount; } }
-        internal int ColumnCount { get { return ViewModel.ColumnCount; } }
-
-        internal Subject<Unit> _matrixDimensionsAvailable = new Subject<Unit>();
-        /// <summary>
-        /// Raised when the RowCount and ColumnCount properties have meaningful values.
-        /// </summary>
-        internal IObservable<Unit> MatrixDimensionsAvailable { get { return _matrixDimensionsAvailable.AsObservable(); } }
-
         public BubbleMatrixView()
         {
             InitializeComponent();
@@ -38,7 +29,7 @@ namespace BubbleBurst.View
                 h => base.DataContextChanged += h,
                 h => base.DataContextChanged -= h);
 
-            dataContextChanged.Subscribe(ev => ViewModel = ev.EventArgs.NewValue as BubbleMatrixViewModel);
+            dataContextChanged.Subscribe(ev => { ViewModel = base.DataContext as BubbleMatrixViewModel; });
 
             // Hook the event raised after a bubble group bursts and a series
             // of animations need to run to advance the game state.
@@ -50,19 +41,14 @@ namespace BubbleBurst.View
         {
             // Store a reference to the panel that contains the bubbles.
             _bubbleCanvas = sender as BubbleCanvas;
-            _bubbleCanvas.RowCount = this.RowCount;
-            _bubbleCanvas.ColumnCount = this.ColumnCount;
+            //_bubbleCanvas.RowCount = ViewModel.RowCount;
+            //_bubbleCanvas.ColumnCount = ViewModel.ColumnCount;
 
             // Create the factory that makes Storyboards used after a bubble group bursts.
             _storyboardFactory = new BubblesTaskStoryboardFactory(_bubbleCanvas);
 
-            // Let the world know that the size of the bubble matrix is known.
-            this.RaiseMatrixDimensionsAvailable();
-        }
-
-        void RaiseMatrixDimensionsAvailable()
-        {
-            _matrixDimensionsAvailable.OnNext(Unit.Default);
+            // Ready to Start the Game
+            ViewModel.StartNewGame();
         }
 
         void ProcessNextTask()

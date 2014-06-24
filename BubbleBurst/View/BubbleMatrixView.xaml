@@ -11,7 +11,7 @@
     <!-- All bubbles live in a BubbleCanvas panel. -->
     <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
-            <view:BubbleCanvas Loaded="HandleBubbleCanvasLoaded" />
+            <view:BubbleCanvas Loaded="HandleBubbleCanvasLoaded" RowCount="{Binding RowCount}" ColumnCount="{Binding ColumnCount}" />
         </ItemsPanelTemplate>
     </ItemsControl.ItemsPanel>
 

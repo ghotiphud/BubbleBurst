@@ -20,8 +20,13 @@ namespace BubbleBurst.View
             }
         }
 
-        internal int RowCount { get; set; }
-        internal int ColumnCount { get; set; }
+        public static readonly DependencyProperty RowCountProperty = 
+            DependencyProperty.Register("RowCount", typeof(int), typeof(BubbleCanvas), new PropertyMetadata(0));
+        internal int RowCount { get { return (int)GetValue(RowCountProperty); } set { SetValue(RowCountProperty, value); } }
+
+        public static readonly DependencyProperty ColumnCountProperty =
+            DependencyProperty.Register("ColumnCount", typeof(int), typeof(BubbleCanvas), new PropertyMetadata(0));
+        internal int ColumnCount { get { return (int)GetValue(ColumnCountProperty); } set { SetValue(ColumnCountProperty, value); } }
 
         internal double CalculateLeft(FrameworkElement bubbleContainer)
         {

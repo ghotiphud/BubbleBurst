@@ -10,8 +10,8 @@
     </UserControl.DataContext>
 
     <UserControl.Resources>
-        <FontFamily x:Key="MiramonteFontFamily">/BubbleBurst.View;Component/Fonts/#Miramonte</FontFamily>
-        <FontFamily x:Key="MiramonteBoldFontFamily">/BubbleBurst.View;Component/Fonts/#Miramonte Bold</FontFamily>
+        <FontFamily x:Key="MiramonteFontFamily">/Fonts/#Miramonte</FontFamily>
+        <FontFamily x:Key="MiramonteBoldFontFamily">/Fonts/#Miramonte Bold</FontFamily>
     </UserControl.Resources>
 
     <Grid>

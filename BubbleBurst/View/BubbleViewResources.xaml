@@ -52,6 +52,7 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
+    
     <Style x:Key="BubbleGridStyle" TargetType="{x:Type Grid}">
         <Setter Property="RenderTransform">
             <Setter.Value>
@@ -100,6 +101,7 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
+    
     <Style x:Key="BubbleBackgroundBorderStyle" TargetType="{x:Type Border}">
         <Setter Property="BorderBrush" Value="Gray" />
         <Setter Property="BorderThickness" Value="0,0,0.5,0.5" />
@@ -118,7 +120,7 @@
     <Storyboard x:Key="BubbleLoadedStoryboard">
         <thriple:EasingDoubleAnimation 
             Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" 
-            Duration="0:0:0.5"
+            Duration="0:0:0.2"
             Equation="CubicEaseInOut"
             FillBehavior="Stop"
             From="0" 
@@ -126,30 +128,13 @@
             />
         <thriple:EasingDoubleAnimation 
             Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" 
-            Duration="0:0:0.5"
+            Duration="0:0:0.2"
             Equation="CubicEaseInOut"
             FillBehavior="Stop" 
             From="0" 
             To="1"  
             />
-        <thriple:EasingDoubleAnimation 
-            Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[1].(TranslateTransform.X)" 
-            Duration="0:0:0.5"
-            Equation="CubicEaseOut"
-            FillBehavior="Stop"
-            From="-21" 
-            To="0"
-            />
-        <thriple:EasingDoubleAnimation 
-            Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[1].(TranslateTransform.Y)" 
-            Duration="0:0:0.5"
-            Equation="CubicEaseOut"
-            FillBehavior="Stop" 
-            From="-21" 
-            To="0"
-            />
     </Storyboard>
-
 
     <!-- CONTROL TEMPLATES-->
     <ControlTemplate x:Key="BubbleTemplate" TargetType="{x:Type Button}">

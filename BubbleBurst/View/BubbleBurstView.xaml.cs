@@ -6,6 +6,7 @@ using BubbleBurst.ViewModel;
 using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Diagnostics;
 
 namespace BubbleBurst.View
 {
@@ -15,49 +16,38 @@ namespace BubbleBurst.View
     /// </summary>
     public partial class BubbleBurstView : UserControl, IViewFor<BubbleBurstViewModel>
     {
-        // From XAML: BubbleMatrixView _bubbleMatrixView;
+        // From XAML: ItemsControl BubbleMatrixView _bubbleMatrixView;
         public BubbleBurstViewModel ViewModel { get; set; }
         object IViewFor.ViewModel { get { return ViewModel; } set { ViewModel = (BubbleBurstViewModel)value; } }
 
         public BubbleBurstView()
         {
-            LoadBubbleViewResources();
-
             InitializeComponent();
 
+            SetupPreviewKeyDownHandler();
+
             ViewModel = base.DataContext as BubbleBurstViewModel;
-
-            _bubbleMatrixView.MatrixDimensionsAvailable.Subscribe(x => this.HandleMatrixDimensionsAvailable());
         }
 
-        static void LoadBubbleViewResources()
+        /// <summary>
+        /// Handle the key combos on keydown.  ex: Ctrl + Z for undo
+        /// </summary>
+        void SetupPreviewKeyDownHandler()
         {
-            // Insert the BubbleView resources at the App level to avoid resource duplication.
-            // If we insert the resources into this control's Resources collection, every time
-            // a BubbleView is removed from the UI some ugly debug warning messages are spewed out.
-            string path = "pack://application:,,,/BubbleBurst.View;component/BubbleViewResources.xaml";
-            var bubbleViewResources = new ResourceDictionary
-            {
-                Source = new Uri(path)
-            };
-            Application.Current.Resources.MergedDictionaries.Add(bubbleViewResources);
-        }
+            var loaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
+                h => this.Loaded += h,
+                h => this.Loaded -= h);
 
-        void HandleMatrixDimensionsAvailable()
-        {
-            // Hook the keyboard event on the Window because this
-            // control does not receive keystrokes.
-            var window = Window.GetWindow(this);
-            if (window != null)
+            // Take(1) will automatically unsubscribe from the event after loading.
+            loaded.Take(1).Subscribe(x =>
             {
+                var window = Window.GetWindow(this);
                 var keyDown = Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(
                     h => window.PreviewKeyDown += h,
                     h => window.PreviewKeyDown -= h);
 
                 keyDown.Subscribe(ev => this.HandleWindowPreviewKeyDown(ev.EventArgs));
-            }
-
-            this.StartNewGame();
+            });
         }
 
         void HandleWindowPreviewKeyDown(KeyEventArgs e)
@@ -71,13 +61,6 @@ namespace BubbleBurst.View
                 ViewModel.UndoCommand.Execute(null);
                 e.Handled = true;
             }
-        }
-
-        void StartNewGame()
-        {
-            int rows = _bubbleMatrixView.RowCount;
-            int cols = _bubbleMatrixView.ColumnCount;
-            ViewModel.BubbleMatrix.StartNewGame();
         }
     }
 }

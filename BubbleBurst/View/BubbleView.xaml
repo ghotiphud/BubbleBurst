@@ -10,13 +10,13 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   Command="{Binding Path=BurstBubbleGroupCommand, Mode=OneTime}"
   RenderTransformOrigin="0.5,0.5"
-  Template="{DynamicResource BubbleTemplate}"
+  Template="{StaticResource BubbleTemplate}"
   >
   <Button.Triggers>
     <!-- This causes the bubble to animate into view. -->
     <EventTrigger RoutedEvent="Button.Loaded">
       <BeginStoryboard 
-        Storyboard="{DynamicResource BubbleLoadedStoryboard}" 
+        Storyboard="{StaticResource BubbleLoadedStoryboard}"
         />
     </EventTrigger>
   </Button.Triggers>
