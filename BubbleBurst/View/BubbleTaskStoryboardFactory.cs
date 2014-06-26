@@ -1,31 +1,26 @@
-﻿using System;
+﻿using BubbleBurst.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-using BubbleBurst.ViewModel;
 using Thriple.Easing;
 
 namespace BubbleBurst.View
 {
-    /// <summary>
-    /// Creates Storyboards used to provide animated 
-    /// transitions when a bubble group bursts or un-bursts.
-    /// </summary>
-    internal class BubblesTaskStoryboardFactory
+    public class BubbleTaskStoryboardFactory
     {
-        readonly BubbleCanvas _bubbleCanvas;
+        private BubbleCanvas _bubbleCanvas;
 
-        internal BubblesTaskStoryboardFactory(BubbleCanvas bubbleCanvas)
+        public BubbleTaskStoryboardFactory(BubbleCanvas _bubbleCanvas)
         {
-            if (bubbleCanvas == null)
-                throw new ArgumentNullException("bubbleCanvas");
-
-            _bubbleCanvas = bubbleCanvas;
+            // TODO: Complete member initialization
+            this._bubbleCanvas = _bubbleCanvas;
         }
-
-        internal Storyboard CreateStoryboard(BubblesTask task)
+        internal Storyboard CreateStoryboard(BubbleTaskGroup taskGroup)
         {
             int millisecondsPerUnit;
             Func<ContentPresenter, double> getTo;
@@ -33,14 +28,14 @@ namespace BubbleBurst.View
             IEnumerable<BubbleViewModel> bubbles;
 
             this.GetStoryboardCreationData(
-                task,
+                taskGroup,
                 out millisecondsPerUnit,
                 out getTo,
                 out animatedProperty,
                 out bubbles);
 
             return this.CreateStoryboard(
-                task,
+                taskGroup,
                 millisecondsPerUnit,
                 getTo,
                 animatedProperty,
@@ -48,22 +43,29 @@ namespace BubbleBurst.View
         }
 
         void GetStoryboardCreationData(
-          BubblesTask task,
+          BubbleTaskGroup taskGroup,
           out int millisecondsPerUnit,
           out Func<ContentPresenter, double> getTo,
           out DependencyProperty animatedProperty,
           out IEnumerable<BubbleViewModel> bubbles)
         {
-            switch (task.TaskType)
+            switch (taskGroup.TaskType)
             {
-                case BubblesTaskType.Burst:
+                case BubbleTaskType.Burst:
                     millisecondsPerUnit = 100;
-                    getTo = cp => (task.IsUndo ? 1.0 : 0.0);
+                    getTo = cp => 0.0;
                     animatedProperty = UIElement.OpacityProperty;
-                    bubbles = task.Bubbles;
+                    bubbles = taskGroup.Select(t => t.Bubble);
                     break;
 
-                case BubblesTaskType.MoveDown:
+                case BubbleTaskType.Add:
+                    millisecondsPerUnit = 100;
+                    getTo = cp => 1.0;
+                    animatedProperty = UIElement.OpacityProperty;
+                    bubbles = taskGroup.Select(t => t.Bubble);
+                    break;
+
+                case BubbleTaskType.MoveDown:
                     millisecondsPerUnit = 50;
                     getTo = _bubbleCanvas.CalculateTop;
                     animatedProperty = Canvas.TopProperty;
@@ -71,13 +73,13 @@ namespace BubbleBurst.View
                     // Sort the bubbles to ensure that the columns move 
                     // in sync with each other in an appealing way.
                     bubbles =
-                        from bubble in task.Bubbles
+                        from bubble in taskGroup.Select(t => t.Bubble)
                         orderby bubble.PreviousColumn
                         orderby bubble.PreviousRow descending
                         select bubble;
                     break;
 
-                case BubblesTaskType.MoveRight:
+                case BubbleTaskType.MoveRight:
                     millisecondsPerUnit = 50;
                     getTo = _bubbleCanvas.CalculateLeft;
                     animatedProperty = Canvas.LeftProperty;
@@ -85,24 +87,24 @@ namespace BubbleBurst.View
                     // Sort the bubbles to ensure that the rows move 
                     // in sync with each other in an appealing way.
                     bubbles =
-                        from bubble in task.Bubbles
+                        from bubble in taskGroup.Select(t => t.Bubble)
                         orderby bubble.PreviousRow descending
                         orderby bubble.PreviousColumn descending
                         select bubble;
                     break;
 
                 default:
-                    throw new ArgumentException("Unrecognized BubblesTaskType: " + task.TaskType);
+                    throw new ArgumentException("Unrecognized BubblesTaskType: " + taskGroup.TaskType);
             }
 
-            if (task.IsUndo)
-            {
-                bubbles = bubbles.Reverse();
-            }
+            //if (taskGroup.IsUndo)
+            //{
+            //    bubbles = bubbles.Reverse();
+            //}
         }
 
         Storyboard CreateStoryboard(
-            BubblesTask task,
+            BubbleTaskGroup taskGroup,
             int millisecondsPerUnit,
             Func<ContentPresenter, double> getTo,
             DependencyProperty animatedProperty,
@@ -119,7 +121,7 @@ namespace BubbleBurst.View
             foreach (ContentPresenter presenter in this.GetBubblePresenters(bubbles))
             {
                 var bubble = presenter.DataContext as BubbleViewModel;
-                var duration = CalculateDuration(task.TaskType, bubble, millisecondsPerUnit);
+                var duration = CalculateDuration(taskGroup.TaskType, bubble, millisecondsPerUnit);
                 var to = getTo(presenter);
                 var anim = new EasingDoubleAnimation
                 {
@@ -132,7 +134,7 @@ namespace BubbleBurst.View
                 Storyboard.SetTarget(anim, presenter);
                 Storyboard.SetTargetProperty(anim, targetProperty);
 
-                if (IsTaskStaggered(task.TaskType))
+                if (IsTaskStaggered(taskGroup.TaskType))
                 {
                     beginTime = beginTime.Add(beginTimeIncrement);
                 }
@@ -159,22 +161,23 @@ namespace BubbleBurst.View
         }
 
         static Duration CalculateDuration(
-            BubblesTaskType taskType,
+            BubbleTaskType taskType,
             BubbleViewModel bubble,
             int millisecondsPerUnit)
         {
             int totalMilliseconds;
             switch (taskType)
             {
-                case BubblesTaskType.Burst:
+                case BubbleTaskType.Burst:
+                case BubbleTaskType.Add:
                     totalMilliseconds = millisecondsPerUnit;
                     break;
 
-                case BubblesTaskType.MoveDown:
+                case BubbleTaskType.MoveDown:
                     totalMilliseconds = millisecondsPerUnit * Math.Abs(bubble.Row - bubble.PreviousRow);
                     break;
 
-                case BubblesTaskType.MoveRight:
+                case BubbleTaskType.MoveRight:
                     totalMilliseconds = millisecondsPerUnit * Math.Abs(bubble.Column - bubble.PreviousColumn);
                     break;
 
@@ -184,9 +187,9 @@ namespace BubbleBurst.View
             return new Duration(TimeSpan.FromMilliseconds(totalMilliseconds));
         }
 
-        static bool IsTaskStaggered(BubblesTaskType taskType)
+        static bool IsTaskStaggered(BubbleTaskType taskType)
         {
-            return taskType != BubblesTaskType.Burst;
+            return taskType != BubbleTaskType.Burst;
         }
     }
 }

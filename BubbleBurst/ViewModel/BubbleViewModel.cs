@@ -99,5 +99,10 @@ namespace BubbleBurst.ViewModel
             int highestValue = bubbleTypeValues.Length - 1;
             return (BubbleType)_random.Next(0, highestValue + 1);
         }
+
+        public override string ToString()
+        {
+            return String.Format("{0}: {1},{2}", BubbleType, Row, Column);
+        }
     }
 }

@@ -41,7 +41,7 @@ namespace BubbleBurst.ViewModel
             internal set { this.RaiseAndSetIfChanged(ref _isIdle, value); }
         }
 
-        public BubblesTaskManager TaskManager { get; private set; }
+        public BubbleTaskManager TaskManager { get; set; }
 
         public IReactiveCommand UndoCommand { get; private set; }
 
@@ -59,7 +59,7 @@ namespace BubbleBurst.ViewModel
             _bubblesInternal = new ReactiveList<BubbleViewModel>();
             this.Bubbles = _bubblesInternal.CreateDerivedCollection(x => x);
 
-            this.TaskManager = new BubblesTaskManager(this);
+            this.TaskManager = new BubbleTaskManager(this);
 
             _bubbleGroup = new BubbleGroup(this.Bubbles);
 
@@ -70,6 +70,33 @@ namespace BubbleBurst.ViewModel
             var canUndo = this.WhenAny(x => x.IsIdle, x => x.TaskManager.CanUndo, (i, cu) => i.Value && cu.Value);
             UndoCommand = new ReactiveCommand(canUndo);
             UndoCommand.Subscribe(x => Undo());
+
+            TaskManager.PendingTaskGroups.Subscribe(tg => ExecuteTaskGroup(tg));
+        }
+
+        private void ExecuteTaskGroup(BubbleTaskGroup taskGroup)
+        {
+            foreach (var task in taskGroup)
+            {
+                var bubble = task.Bubble;
+                var moveDistance = task.MoveDistance;
+
+                switch (taskGroup.TaskType)
+                {
+                    case BubbleTaskType.Burst:
+                        RemoveBubble(bubble);
+                        break;
+                    case BubbleTaskType.Add:
+                        AddBubble(bubble);
+                        break;
+                    case BubbleTaskType.MoveDown:
+                        bubble.MoveTo(bubble.Row + moveDistance, bubble.Column);
+                        break;
+                    case BubbleTaskType.MoveRight:
+                        bubble.MoveTo(bubble.Row, bubble.Column + moveDistance);
+                        break;
+                }
+            }
         }
 
         public void StartNewGame()
@@ -119,8 +146,8 @@ namespace BubbleBurst.ViewModel
                 return;
 
             _bubbleGroupSizeStack.Push(bubblesInGroup.Length);
-
-            this.TaskManager.PublishTasks(bubblesInGroup);
+            
+            this.TaskManager.BurstBubbleGroup(bubblesInGroup);
         }
 
         internal void ResetBubbleGroup()

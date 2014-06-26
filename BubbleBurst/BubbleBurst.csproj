@@ -137,15 +137,16 @@
     <AppDesigner Include="Properties\" />
     <Compile Include="ViewModel\BubbleBurstViewModel.cs" />
     <Compile Include="ViewModel\BubbleMatrixViewModel.cs" />
-    <Compile Include="ViewModel\BubblesTask.cs" />
-    <Compile Include="ViewModel\BubblesTaskManager.cs" />
-    <Compile Include="ViewModel\BubblesTaskType.cs" />
+    <Compile Include="ViewModel\BubbleTaskType.cs" />
+    <Compile Include="ViewModel\BubbleTask.cs" />
+    <Compile Include="ViewModel\BubbleTaskFactory.cs" />
+    <Compile Include="ViewModel\BubbleTaskGroup.cs" />
+    <Compile Include="ViewModel\BubbleTaskManager.cs" />
     <Compile Include="ViewModel\BubbleType.cs" />
     <Compile Include="ViewModel\BubbleViewModel.cs" />
     <Compile Include="ViewModel\GameOverViewModel.cs" />
     <Compile Include="ViewModel\Internal\BubbleGroup.cs" />
     <Compile Include="ViewModel\Internal\BubbleLocationManager.cs" />
-    <Compile Include="ViewModel\Internal\BubblesTaskFactory.cs" />
     <Compile Include="View\BubbleBurstView.xaml.cs">
       <DependentUpon>BubbleBurstView.xaml</DependentUpon>
     </Compile>
@@ -153,7 +154,7 @@
     <Compile Include="View\BubbleMatrixView.xaml.cs">
       <DependentUpon>BubbleMatrixView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\BubblesTaskStoryboardFactory.cs" />
+    <Compile Include="View\BubbleTaskStoryboardFactory.cs" />
     <Compile Include="View\BubbleView.xaml.cs">
       <DependentUpon>BubbleView.xaml</DependentUpon>
     </Compile>

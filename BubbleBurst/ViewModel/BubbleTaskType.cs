@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents the various tasks that can be performed on a group of bubbles.
     /// </summary>
-    public enum BubblesTaskType
+    public enum BubbleTaskType
     {
         /// <summary>
         /// Represents the task of removing the bubbles in a group that was burst by the user.
@@ -20,6 +20,8 @@
         /// Represents the task of moving all bubbles in the bubble matrix as far
         /// to the right as possible, after the user bursts a bubble group.
         /// </summary>
-        MoveRight
+        MoveRight,
+
+        Add,
     }
 }
