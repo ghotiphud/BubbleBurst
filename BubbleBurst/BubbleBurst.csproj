@@ -146,7 +146,6 @@
     <Compile Include="ViewModel\BubbleViewModel.cs" />
     <Compile Include="ViewModel\GameOverViewModel.cs" />
     <Compile Include="ViewModel\Internal\BubbleGroup.cs" />
-    <Compile Include="ViewModel\Internal\BubbleLocationManager.cs" />
     <Compile Include="View\BubbleBurstView.xaml.cs">
       <DependentUpon>BubbleBurstView.xaml</DependentUpon>
     </Compile>

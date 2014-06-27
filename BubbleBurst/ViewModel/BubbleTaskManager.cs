@@ -43,7 +43,10 @@ namespace BubbleBurst.ViewModel
                             {
                                 var moveRight = _taskFactory.CreateTaskGroup(BubbleTaskType.MoveRight, bubblesInGroup);
 
-                                moveRight.OnComplete.Subscribe(z => _bubbleMatrix.TryToEndGame());
+                                moveRight.OnComplete.Subscribe(z => {
+                                    _bubbleMatrix.IsIdle = true;
+                                    _bubbleMatrix.TryToEndGame();
+                                });
 
                                 _pendingTaskGroups.OnNext(moveRight);
 
@@ -53,12 +56,14 @@ namespace BubbleBurst.ViewModel
                     _pendingTaskGroups.OnNext(moveDown);
                 });
 
+            _bubbleMatrix.IsIdle = false;
             _pendingTaskGroups.OnNext(burst);
         }
 
         public void Undo()
         {
             var taskGroups = _undoStack.Pop().ToList();
+            this.raisePropertyChanged("CanUndo");
 
             List<Action> lambdas = new List<Action>();
 

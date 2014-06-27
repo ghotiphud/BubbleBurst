@@ -11,23 +11,13 @@ namespace BubbleBurst.ViewModel
     public class BubbleViewModel : ReactiveObject
     {
         readonly BubbleMatrixViewModel _bubbleMatrix;
-        readonly BubbleLocationManager _locationManager;
 
         static readonly Random _random = new Random(DateTime.Now.Millisecond);
 
         public BubbleType BubbleType { get; private set; }
 
-        public int Row { get { return _locationManager.Row; } }
-        public int Column { get { return _locationManager.Column; } }
-
-        /// <summary>
-        /// The row in which this bubble existed before it moved to its current row.
-        /// </summary>
-        public int PreviousRow { get { return _locationManager.PreviousRow; } }
-        /// <summary>
-        /// The column in which this bubble existed before it moved to its current column.
-        /// </summary>
-        public int PreviousColumn { get { return _locationManager.PreviousColumn; } }
+        public int Row { get; set; }
+        public int Column { get; set; }
 
         bool _isInBubbleGroup;
         /// <summary>
@@ -58,8 +48,7 @@ namespace BubbleBurst.ViewModel
 
             _bubbleMatrix = bubbleMatrix;
 
-            _locationManager = new BubbleLocationManager();
-            _locationManager.MoveTo(row, column);
+            MoveTo(row, column);
 
             this.BubbleType = GetRandomBubbleType();
 
@@ -78,19 +67,10 @@ namespace BubbleBurst.ViewModel
             _bubbleMatrix.VerifyGroupMembership(isMouseOver ? this : null);
         }
 
-        internal void BeginUndo()
-        {
-            _locationManager.MoveToPreviousLocation();
-        }
-
-        internal void EndUndo()
-        {
-            _locationManager.EndMoveToPreviousLocation();
-        }
-
         internal void MoveTo(int row, int column)
         {
-            _locationManager.MoveTo(row, column);
+            Row = row;
+            Column = column;
         }
 
         static BubbleType GetRandomBubbleType()
