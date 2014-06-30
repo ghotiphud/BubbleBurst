@@ -41,8 +41,6 @@ namespace BubbleBurst.View
         {
             // Store a reference to the panel that contains the bubbles.
             _bubbleCanvas = sender as BubbleCanvas;
-            //_bubbleCanvas.RowCount = ViewModel.RowCount;
-            //_bubbleCanvas.ColumnCount = ViewModel.ColumnCount;
 
             // Create the factory that makes Storyboards used after a bubble group bursts.
             _storyboardFactory = new BubbleTaskStoryboardFactory(_bubbleCanvas);

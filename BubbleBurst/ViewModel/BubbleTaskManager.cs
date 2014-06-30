@@ -33,25 +33,27 @@ namespace BubbleBurst.ViewModel
 
         internal async void BurstBubbleGroup(BubbleViewModel[] bubblesInGroup)
         {
-            var burst = _taskFactory.CreateTaskGroup(BubbleTaskType.Burst, bubblesInGroup);
+            var taskTypes = new[] { 
+                BubbleTaskType.Burst,
+                BubbleTaskType.MoveDown,
+                BubbleTaskType.MoveRight,
+            };
+
+            var tasksToArchive = new List<BubbleTaskGroup>();
+
             _bubbleMatrix.IsIdle = false;
-            _pendingTaskGroups.OnNext(burst);
 
-            // LastOrDefaultAsync used here because OnComplete Observable may be Completed 
-            // before this line is executed.  This results in a runtime error if we don't guard against it.
-            await burst.OnComplete.LastOrDefaultAsync();
+            foreach (var taskType in taskTypes)
+            {
+                var group = _taskFactory.CreateTaskGroup(taskType, bubblesInGroup);
+                _pendingTaskGroups.OnNext(group);
+                tasksToArchive.Add(group);
+                // LastOrDefaultAsync used here because OnComplete Observable may be Completed 
+                // before this line is executed.  This results in a runtime error if we don't guard against it.
+                await group.OnComplete.LastOrDefaultAsync();
+            }
 
-            var moveDown = _taskFactory.CreateTaskGroup(BubbleTaskType.MoveDown, bubblesInGroup);
-            _pendingTaskGroups.OnNext(moveDown);
-
-            await moveDown.OnComplete.LastOrDefaultAsync();
-
-            var moveRight = _taskFactory.CreateTaskGroup(BubbleTaskType.MoveRight, bubblesInGroup);
-            _pendingTaskGroups.OnNext(moveRight);
-            ArchiveTaskGroups(new List<BubbleTaskGroup> { burst, moveDown, moveRight });
-
-            await moveRight.OnComplete.LastOrDefaultAsync();
-
+            ArchiveTaskGroups(tasksToArchive);
             _bubbleMatrix.IsIdle = true;
             _bubbleMatrix.TryToEndGame();
         }
@@ -81,8 +83,10 @@ namespace BubbleBurst.ViewModel
 
         internal void Reset()
         {
-            //_pendingTaskGroups.OnCompleted();
-            //_pendingTaskGroups = new Subject<BubbleTaskGroup>();
+            _pendingTaskGroups.OnCompleted();
+            _pendingTaskGroups = new Subject<BubbleTaskGroup>();
+            this.raisePropertyChanged("PendingTaskGroups");
+
             _undoStack.Clear();
             this.raisePropertyChanged("CanUndo");
         }

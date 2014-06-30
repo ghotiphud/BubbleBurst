@@ -41,7 +41,16 @@ namespace BubbleBurst.ViewModel
             internal set { this.RaiseAndSetIfChanged(ref _isIdle, value); }
         }
 
-        public BubbleTaskManager TaskManager { get; set; }
+        BubbleTaskManager _taskManager;
+        /// <summary>
+        /// Represents whether the application is currently processing something that
+        /// requires the user interface to ignore user interactions until it finishes.
+        /// </summary>
+        public BubbleTaskManager TaskManager
+        {
+            get { return _taskManager; }
+            internal set { this.RaiseAndSetIfChanged(ref _taskManager, value); }
+        }
 
         public IReactiveCommand UndoCommand { get; private set; }
 
