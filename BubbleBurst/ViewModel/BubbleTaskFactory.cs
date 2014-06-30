@@ -41,16 +41,16 @@ namespace BubbleBurst.ViewModel
 
         public BubbleTaskGroup CreateUndoTaskGroup(BubbleTaskGroup taskGroup)
         {
-            var undoTaskGroup = taskGroup.Clone();
+            taskGroup.ResetTask();
 
-            switch (undoTaskGroup.TaskType)
+            switch (taskGroup.TaskType)
             {
                 case BubbleTaskType.Burst:
-                    undoTaskGroup.TaskType = BubbleTaskType.Add;
+                    taskGroup.TaskType = BubbleTaskType.Add;
                     break;
                 case BubbleTaskType.MoveRight:
                 case BubbleTaskType.MoveDown:
-                    foreach (var task in undoTaskGroup)
+                    foreach (var task in taskGroup)
                     {
                         // Move the same distance in the opposite direction
                         task.MoveDistance = -task.MoveDistance;
@@ -58,7 +58,7 @@ namespace BubbleBurst.ViewModel
                     break;
             }
 
-            return undoTaskGroup;
+            return taskGroup;
         }
 
         BubbleTaskGroup MoveBubblesDown(BubbleViewModel[] bubblesInGroup)

@@ -72,6 +72,7 @@ namespace BubbleBurst.ViewModel
         void RaiseRequestClose()
         {
             _requestClose.OnNext(Unit.Default);
+            _requestClose.OnCompleted();
         }
     }
 }

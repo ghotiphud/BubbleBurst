@@ -71,7 +71,7 @@ namespace BubbleBurst.ViewModel
             UndoCommand = new ReactiveCommand(canUndo);
             UndoCommand.Subscribe(x => Undo());
 
-            TaskManager.PendingTaskGroups.Subscribe(tg => ExecuteTaskGroup(tg));
+            this.WhenAnyObservable(t => t.TaskManager.PendingTaskGroups).Subscribe(tg => ExecuteTaskGroup(tg));
         }
 
         private void ExecuteTaskGroup(BubbleTaskGroup taskGroup)

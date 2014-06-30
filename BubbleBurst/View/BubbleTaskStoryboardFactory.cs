@@ -47,14 +47,12 @@ namespace BubbleBurst.View
             foreach (ContentPresenter presenter in this.GetBubblePresenters(bubbles))
             {
                 var bubble = presenter.DataContext as BubbleViewModel;
-                var duration = CalculateDuration(taskGroup, bubble, millisecondsPerUnit);
-                var to = getTo(presenter);
                 var anim = new EasingDoubleAnimation
                 {
                     BeginTime = beginTime,
-                    Duration = duration,
+                    Duration = CalculateDuration(taskGroup, bubble, millisecondsPerUnit),
                     Equation = EasingEquation.CubicEaseIn,
-                    To = to,
+                    To = getTo(presenter),
                 };
 
                 Storyboard.SetTarget(anim, presenter);
@@ -101,7 +99,9 @@ namespace BubbleBurst.View
 
                     // Sort the bubbles to ensure that the columns move 
                     // in sync with each other in an appealing way.
-                    bubbles = taskGroup.Select(t => t.Bubble).OrderBy(b => b.Row).ThenByDescending(b => b.Column);
+                    bubbles = taskGroup.Select(t => t.Bubble)
+                        .OrderByDescending(b => b.Row)
+                        .ThenByDescending(b => b.Column);
                     break;
 
                 case BubbleTaskType.MoveRight:
@@ -111,7 +111,9 @@ namespace BubbleBurst.View
 
                     // Sort the bubbles to ensure that the rows move 
                     // in sync with each other in an appealing way.
-                    bubbles = taskGroup.Select(t => t.Bubble).OrderByDescending(b => b.Row).ThenByDescending(b => b.Column);
+                    bubbles = taskGroup.Select(t => t.Bubble)
+                        .OrderByDescending(b => b.Row)
+                        .ThenByDescending(b => b.Column);
                     break;
 
                 default:

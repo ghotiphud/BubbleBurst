@@ -25,13 +25,12 @@ namespace BubbleBurst.ViewModel
             _onComplete.OnCompleted();
         }
 
-        public BubbleTaskGroup Clone()
+        /// <summary>
+        /// Before executing a task a second time, must reset the OnComplete observable.
+        /// </summary>
+        public void ResetTask()
         {
-            var clone = (BubbleTaskGroup)this.MemberwiseClone();
-
-            clone._onComplete = new Subject<Unit>();
-
-            return clone;
+            this._onComplete = new Subject<Unit>();
         }
     }
 }

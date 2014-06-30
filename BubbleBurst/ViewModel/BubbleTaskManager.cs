@@ -31,59 +31,46 @@ namespace BubbleBurst.ViewModel
             _undoStack = new Stack<IEnumerable<BubbleTaskGroup>>();
         }
 
-        internal void BurstBubbleGroup(BubbleViewModel[] bubblesInGroup)
+        internal async void BurstBubbleGroup(BubbleViewModel[] bubblesInGroup)
         {
             var burst = _taskFactory.CreateTaskGroup(BubbleTaskType.Burst, bubblesInGroup);
-
-            burst.OnComplete.Subscribe(x =>
-                {
-                    var moveDown = _taskFactory.CreateTaskGroup(BubbleTaskType.MoveDown, bubblesInGroup);
-
-                    moveDown.OnComplete.Subscribe(y =>
-                            {
-                                var moveRight = _taskFactory.CreateTaskGroup(BubbleTaskType.MoveRight, bubblesInGroup);
-
-                                moveRight.OnComplete.Subscribe(z => {
-                                    _bubbleMatrix.IsIdle = true;
-                                    _bubbleMatrix.TryToEndGame();
-                                });
-
-                                _pendingTaskGroups.OnNext(moveRight);
-
-                                ArchiveTaskGroups(new List<BubbleTaskGroup> { burst, moveDown, moveRight });
-                            });
-
-                    _pendingTaskGroups.OnNext(moveDown);
-                });
-
             _bubbleMatrix.IsIdle = false;
             _pendingTaskGroups.OnNext(burst);
+
+            // LastOrDefaultAsync used here because OnComplete Observable may be Completed 
+            // before this line is executed.  This results in a runtime error if we don't guard against it.
+            await burst.OnComplete.LastOrDefaultAsync();
+
+            var moveDown = _taskFactory.CreateTaskGroup(BubbleTaskType.MoveDown, bubblesInGroup);
+            _pendingTaskGroups.OnNext(moveDown);
+
+            await moveDown.OnComplete.LastOrDefaultAsync();
+
+            var moveRight = _taskFactory.CreateTaskGroup(BubbleTaskType.MoveRight, bubblesInGroup);
+            _pendingTaskGroups.OnNext(moveRight);
+            ArchiveTaskGroups(new List<BubbleTaskGroup> { burst, moveDown, moveRight });
+
+            await moveRight.OnComplete.LastOrDefaultAsync();
+
+            _bubbleMatrix.IsIdle = true;
+            _bubbleMatrix.TryToEndGame();
         }
 
-        public void Undo()
+        public async void Undo()
         {
-            var taskGroups = _undoStack.Pop().ToList();
+            var taskGroups = _undoStack.Pop().Reverse().ToList();
             this.raisePropertyChanged("CanUndo");
 
-            List<Action> lambdas = new List<Action>();
+            _bubbleMatrix.IsIdle = false;
 
-            for (var i = 0; i < taskGroups.Count(); i++)
+            foreach (var taskGroup in taskGroups)
             {
-                var index = i;
-                lambdas.Add(() =>
-                {
-                    var group = _taskFactory.CreateUndoTaskGroup(taskGroups[index]);
-
-                    if (index != 0)
-                    {
-                        group.OnComplete.Subscribe(x => lambdas[index - 1]());
-                    }
-
-                    _pendingTaskGroups.OnNext(group);
-                });
+                var group = _taskFactory.CreateUndoTaskGroup(taskGroup);
+                _pendingTaskGroups.OnNext(group);
+                await group.OnComplete.LastOrDefaultAsync();
             }
 
-            lambdas.Last()();
+            _bubbleMatrix.IsIdle = true;
         }
 
         void ArchiveTaskGroups(IEnumerable<BubbleTaskGroup> taskGroups)
