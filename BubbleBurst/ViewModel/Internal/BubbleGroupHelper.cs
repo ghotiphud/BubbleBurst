@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,37 +10,41 @@ namespace BubbleBurst.ViewModel.Internal
     /// Exposes methods to activate and deactivate a group of bubbles,
     /// which is used to highlight them in the UI.
     /// </summary>
-    internal class BubbleGroup
+    internal class BubbleGroupHelper : ReactiveObject
     {
         readonly IEnumerable<BubbleViewModel> _allBubbles;
 
-        internal IList<BubbleViewModel> BubblesInGroup { get; private set; }
+        List<BubbleViewModel> _bubblesInGroup = new List<BubbleViewModel>();
 
-        internal bool HasBubbles { get { return this.BubblesInGroup.Any(); } }
+        bool HasBubbles { get { return this._bubblesInGroup.Any(); } }
 
-        internal BubbleGroup(IEnumerable<BubbleViewModel> allBubbles)
+        internal BubbleGroupHelper(IEnumerable<BubbleViewModel> allBubbles)
         {
             if (allBubbles == null)
                 throw new ArgumentNullException("allBubbles");
 
             _allBubbles = allBubbles;
-            this.BubblesInGroup = new List<BubbleViewModel>();
         }
 
         internal void Activate()
         {
-            foreach (BubbleViewModel member in this.BubblesInGroup)
+            foreach (BubbleViewModel member in _bubblesInGroup)
             {
-                member.IsInBubbleGroup = true;
+                member.IsActive = true;
             }
         }
 
         internal void Deactivate()
         {
-            foreach (BubbleViewModel member in this.BubblesInGroup)
+            foreach (BubbleViewModel member in _bubblesInGroup)
             {
-                member.IsInBubbleGroup = false;
+                member.IsActive = false;
             }
+        }
+
+        internal bool AnyGroupsExist()
+        {
+            return _allBubbles.Any(b => FindBubbleGroup(b).HasBubbles);
         }
 
         /// <summary>
@@ -47,25 +52,25 @@ namespace BubbleBurst.ViewModel.Internal
         /// is a member.  If a group is found, this object's BubblesInGroup
         /// collection will contain the bubbles in that group afterwards.
         /// </summary>
-        internal BubbleGroup FindBubbleGroup(BubbleViewModel bubble)
+        internal BubbleGroupHelper FindBubbleGroup(BubbleViewModel bubble)
         {
             if (bubble == null)
                 throw new ArgumentNullException("bubble");
 
-            bool isBubbleInCurrentGroup = this.BubblesInGroup.Contains(bubble);
+            bool isBubbleInCurrentGroup = this._bubblesInGroup.Contains(bubble);
             if (!isBubbleInCurrentGroup)
             {
-                this.BubblesInGroup.Clear();
+                this._bubblesInGroup.Clear();
 
                 this.SearchForGroup(bubble);
 
                 bool addOriginalBubble =
                     this.HasBubbles &&
-                    !this.BubblesInGroup.Contains(bubble);
+                    !this._bubblesInGroup.Contains(bubble);
 
                 if (addOriginalBubble)
                 {
-                    this.BubblesInGroup.Add(bubble);
+                    this._bubblesInGroup.Add(bubble);
                 }
             }
             return this;
@@ -74,7 +79,7 @@ namespace BubbleBurst.ViewModel.Internal
         internal void Reset()
         {
             this.Deactivate();
-            this.BubblesInGroup.Clear();
+            _bubblesInGroup.Clear();
         }
 
         void SearchForGroup(BubbleViewModel bubble)
@@ -84,9 +89,9 @@ namespace BubbleBurst.ViewModel.Internal
 
             foreach (BubbleViewModel groupMember in this.FindMatchingNeighbors(bubble))
             {
-                if (!this.BubblesInGroup.Contains(groupMember))
+                if (!_bubblesInGroup.Contains(groupMember))
                 {
-                    this.BubblesInGroup.Add(groupMember);
+                    _bubblesInGroup.Add(groupMember);
                     this.SearchForGroup(groupMember);
                 }
             }

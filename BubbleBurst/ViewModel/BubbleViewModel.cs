@@ -19,15 +19,15 @@ namespace BubbleBurst.ViewModel
         public int Row { get; set; }
         public int Column { get; set; }
 
-        bool _isInBubbleGroup;
+        bool _isActive;
         /// <summary>
         /// Returns true if this bubble is a member of the 
         /// currently active bubble group in the user interface.
         /// </summary>
-        public bool IsInBubbleGroup
+        public bool IsActive
         {
-            get { return _isInBubbleGroup; }
-            internal set { this.RaiseAndSetIfChanged(ref _isInBubbleGroup, value); }
+            get { return _isActive; }
+            internal set { this.RaiseAndSetIfChanged(ref _isActive, value); }
         }
 
         /// <summary>
@@ -62,9 +62,9 @@ namespace BubbleBurst.ViewModel
         /// <param name="isMouseOver">
         /// True if the mouse cursor is currently over this bubble.
         /// </param>
-        public void VerifyGroupMembership(bool isMouseOver)
+        public void SetFocus(bool isMouseOver)
         {
-            _bubbleMatrix.VerifyGroupMembership(isMouseOver ? this : null);
+            _bubbleMatrix.FocusedBubble = isMouseOver ? this : null;
         }
 
         internal void MoveTo(int row, int column)
@@ -76,10 +76,10 @@ namespace BubbleBurst.ViewModel
         static BubbleType GetRandomBubbleType()
         {
             var bubbleTypeValues = Enum.GetValues(typeof(BubbleType)) as BubbleType[];
-            int highestValue = bubbleTypeValues.Length - 1;
-            return (BubbleType)_random.Next(0, highestValue + 1);
+            return bubbleTypeValues[_random.Next(bubbleTypeValues.Length)];
         }
 
+        // Easier Viewing for Debugging
         public override string ToString()
         {
             return String.Format("{0}: {1},{2}", BubbleType, Row, Column);

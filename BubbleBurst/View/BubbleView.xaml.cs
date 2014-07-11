@@ -47,7 +47,7 @@ namespace BubbleBurst.View
         {
             if (ViewModel != null)
             {
-                ViewModel.VerifyGroupMembership(true);
+                ViewModel.SetFocus(true);
             }
         }
 
@@ -55,7 +55,7 @@ namespace BubbleBurst.View
         {
             if (ViewModel != null)
             {
-                ViewModel.VerifyGroupMembership(false);
+                ViewModel.SetFocus(false);
             }
         }
     }

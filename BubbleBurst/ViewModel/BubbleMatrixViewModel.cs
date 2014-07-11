@@ -16,7 +16,7 @@ namespace BubbleBurst.ViewModel
     /// </summary>
     public class BubbleMatrixViewModel : ReactiveObject
     {
-        readonly BubbleGroup _bubbleGroup;
+        readonly BubbleGroupHelper _bubbleGroupHelper;
         readonly Stack<int> _bubbleGroupSizeStack;
 
         // The Matrix
@@ -26,6 +26,15 @@ namespace BubbleBurst.ViewModel
         // Bubbles
         readonly IReactiveList<BubbleViewModel> _bubblesInternal;
         public IReactiveDerivedList<BubbleViewModel> Bubbles { get; private set; }
+
+        BubbleViewModel _focusedBubble;
+        public BubbleViewModel FocusedBubble
+        {
+            get { return _focusedBubble; }
+            internal set { this.RaiseAndSetIfChanged(ref _focusedBubble, value); }
+        }
+
+        IEnumerable<BubbleViewModel> ActiveBubbleGroup { get { return Bubbles.Where(b => b.IsActive); } }
 
         internal int MostBubblesPoppedAtOnce { get { return _bubbleGroupSizeStack.Max(); } }
 
@@ -70,7 +79,7 @@ namespace BubbleBurst.ViewModel
 
             this.TaskManager = new BubbleTaskManager(this);
 
-            _bubbleGroup = new BubbleGroup(this.Bubbles);
+            _bubbleGroupHelper = new BubbleGroupHelper(this.Bubbles);
 
             _bubbleGroupSizeStack = new Stack<int>();
 
@@ -81,6 +90,8 @@ namespace BubbleBurst.ViewModel
             UndoCommand.Subscribe(x => Undo());
 
             this.WhenAnyObservable(t => t.TaskManager.PendingTaskGroups).Subscribe(tg => ExecuteTaskGroup(tg));
+
+            this.WhenAnyValue(t => t.FocusedBubble).Subscribe(b => ActivateBubbleGroup(b));
         }
 
         private void ExecuteTaskGroup(BubbleTaskGroup taskGroup)
@@ -112,7 +123,7 @@ namespace BubbleBurst.ViewModel
         {
             // Reset game state.
             this.IsIdle = true;
-            this.ResetBubbleGroup();
+            _bubbleGroupHelper.Reset();
             _bubbleGroupSizeStack.Clear();
             this.TaskManager.Reset();
 
@@ -122,7 +133,7 @@ namespace BubbleBurst.ViewModel
         void InitializeBubbles()
         {
             // Create a new matrix of bubbles.
-            this.ClearBubbles();
+            _bubblesInternal.Clear();
             ((ReactiveList<BubbleViewModel>)_bubblesInternal).AddRange(
                 from row in Enumerable.Range(0, RowCount)
                 from col in Enumerable.Range(0, ColumnCount)
@@ -137,31 +148,18 @@ namespace BubbleBurst.ViewModel
             _bubblesInternal.Add(bubble);
         }
 
-        public void ClearBubbles()
-        {
-            if (!this.IsIdle)
-                throw new InvalidOperationException("Cannot clear bubbles when matrix is not idle.");
-
-            _bubblesInternal.Clear();
-        }
-
         internal void BurstBubbleGroup()
         {
             if (!this.IsIdle)
                 throw new InvalidOperationException("Cannot burst a bubble group when not idle.");
 
-            var bubblesInGroup = _bubbleGroup.BubblesInGroup.ToArray();
+            var bubblesInGroup = ActiveBubbleGroup.ToArray();
             if (!bubblesInGroup.Any())
                 return;
 
             _bubbleGroupSizeStack.Push(bubblesInGroup.Length);
             
             this.TaskManager.BurstBubbleGroup(bubblesInGroup);
-        }
-
-        internal void ResetBubbleGroup()
-        {
-            _bubbleGroup.Reset();
         }
 
         internal void RemoveBubble(BubbleViewModel bubble)
@@ -174,20 +172,20 @@ namespace BubbleBurst.ViewModel
 
         internal void TryToEndGame()
         {
-            bool groupExists = this.Bubbles.Any(b => this.IsInBubbleGroup(b));
+            bool groupExists = _bubbleGroupHelper.AnyGroupsExist();
             if (!groupExists)
             {
                 this.IsIdle = false;
-                this.RaiseGameEnded();
+                _gameEnded.OnNext(Unit.Default);
             }
         }
 
-        internal void VerifyGroupMembership(BubbleViewModel bubble)
+        internal void ActivateBubbleGroup(BubbleViewModel bubble)
         {
-            _bubbleGroup.Deactivate();
+            _bubbleGroupHelper.Deactivate();
             if (bubble != null)
             {
-                _bubbleGroup.FindBubbleGroup(bubble).Activate();
+                _bubbleGroupHelper.FindBubbleGroup(bubble).Activate();
             }
         }
 
@@ -202,16 +200,6 @@ namespace BubbleBurst.ViewModel
             _bubbleGroupSizeStack.Pop();
 
             this.TaskManager.Undo();
-        }
-
-        bool IsInBubbleGroup(BubbleViewModel bubble)
-        {
-            return new BubbleGroup(this.Bubbles).FindBubbleGroup(bubble).HasBubbles;
-        }
-
-        void RaiseGameEnded()
-        {
-            _gameEnded.OnNext(Unit.Default);
         }
     }
 }

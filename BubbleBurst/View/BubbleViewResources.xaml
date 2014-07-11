@@ -61,7 +61,7 @@
         </Setter>
         <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
         <Style.Triggers>
-            <DataTrigger Binding="{Binding Path=IsInBubbleGroup}" Value="True">
+            <DataTrigger Binding="{Binding Path=IsActive}" Value="True">
                 <DataTrigger.EnterActions>
                     <BeginStoryboard>
                         <Storyboard>
@@ -109,7 +109,7 @@
         <Setter Property="Margin" Value="4" />
         <Setter Property="Visibility" Value="Collapsed" />
         <Style.Triggers>
-            <DataTrigger Binding="{Binding Path=IsInBubbleGroup}" Value="True">
+            <DataTrigger Binding="{Binding Path=IsActive}" Value="True">
                 <Setter Property="Visibility" Value="Visible" />
             </DataTrigger>
         </Style.Triggers>
